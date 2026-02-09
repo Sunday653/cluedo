@@ -211,6 +211,93 @@
             margin: 0;
         }
         
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #0f3460;
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            gap: 5px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            color: #999;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Checking animation */
+        .checking-item {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .checking-item .team-label {
+            font-weight: 600;
+            color: white;
+        }
+        
+        .checking-item .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checking-dots {
+            display: inline-block;
+        }
+        
+        .checking-dots::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        .check-result {
+            font-weight: 600;
+        }
+        
+        .check-result.has-card {
+            color: #4caf50;
+        }
+        
+        .check-result.no-card {
+            color: #666;
+        }
+        
+        
         
         #qr-reader {
             border-radius: 12px;
@@ -326,46 +413,69 @@
         <div id="screen-playing" class="screen">
             <div class="card">
                 <div class="team-badge" id="team-badge-playing"></div>
-                
                 <div class="rotation-info" id="rotation-info"></div>
                 
-                <h2>Huidige Suggestie</h2>
-                <div class="suggestion-box">
-                    <div class="suggestion-item">
-                        <div>
-                            <div class="label">👤 Persoon:</div>
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab" onclick="switchGameTab('my-cards-tab')">🎴 Mijn Kaarten</button>
+                    <button class="tab active" onclick="switchGameTab('suggestion-tab')">🔍 Suggestie</button>
+                    <button class="tab" onclick="switchGameTab('history-tab')">📜 Logboek</button>
+                </div>
+                
+                <!-- Tab 1: Mijn Kaarten -->
+                <div id="my-cards-tab" class="tab-content">
+                    <h2>Mijn Kaarten</h2>
+                    <div class="info-box">
+                        <div id="my-cards"></div>
+                    </div>
+                </div>
+                
+                <!-- Tab 2: Suggestie -->
+                <div id="suggestion-tab" class="tab-content active">
+                    <h2>Suggestie Maken</h2>
+                    <div class="suggestion-box">
+                        <div class="suggestion-item">
+                            <div>
+                                <div class="label">👤 Persoon:</div>
+                            </div>
+                            <div class="value" id="suggestion-person">
+                                <span class="empty">Scan een kaart</span>
+                            </div>
                         </div>
-                        <div class="value" id="suggestion-person">
-                            <span class="empty">Scan een kaart</span>
+                        <div class="suggestion-item">
+                            <div>
+                                <div class="label">🔪 Wapen:</div>
+                            </div>
+                            <div class="value" id="suggestion-weapon">
+                                <span class="empty">Scan een kaart</span>
+                            </div>
+                        </div>
+                        <div class="suggestion-item">
+                            <div>
+                                <div class="label">🏠 Locatie:</div>
+                            </div>
+                            <div class="value" id="suggestion-location">
+                                <span class="empty">Scan een kaart</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="suggestion-item">
-                        <div>
-                            <div class="label">🔪 Wapen:</div>
-                        </div>
-                        <div class="value" id="suggestion-weapon">
-                            <span class="empty">Scan een kaart</span>
-                        </div>
-                    </div>
-                    <div class="suggestion-item">
-                        <div>
-                            <div class="label">🏠 Locatie:</div>
-                        </div>
-                        <div class="value" id="suggestion-location">
-                            <span class="empty">Scan een kaart</span>
+                    
+                    <button class="btn" onclick="scanCard()">📷 Scan Kaart</button>
+                    <button class="btn" id="check-suggestion-btn" onclick="checkSuggestion()" disabled>🔍 Controleer Suggestie</button>
+                </div>
+                
+                <!-- Tab 3: Logboek -->
+                <div id="history-tab" class="tab-content">
+                    <h2>Logboek</h2>
+                    <div id="history-list">
+                        <div class="info-box">
+                            <p style="text-align: center; color: #999;">Nog geen geschiedenis</p>
                         </div>
                     </div>
                 </div>
                 
-                <button class="btn" onclick="scanCard()">📷 Scan Kaart</button>
-                <button class="btn" id="check-suggestion-btn" onclick="checkSuggestion()" disabled>🔍 Controleer Suggestie</button>
-                
-                <h2 style="margin-top: 30px;">Mijn Kaarten</h2>
-                <div class="info-box">
-                    <div id="my-cards"></div>
-                </div>
-                
-                <button class="btn btn-secondary" onclick="alert('Beschuldiging functie komt binnenkort!')" style="margin-top: 20px;">💀 Beschuldiging</button>
+                <!-- Bottom buttons -->
+                <button class="btn btn-secondary" onclick="alert('Beschuldiging functie komt binnenkort!')" style="margin-top: 30px;">💀 Beschuldiging</button>
                 <button class="btn btn-secondary" onclick="resetApp()">🔄 Reset App</button>
             </div>
         </div>
@@ -422,6 +532,14 @@
                 <div id="qr-reader-team-check" class="hidden"></div>
                 <button class="btn" id="start-team-scan-btn" onclick="startTeamCheckScan()">📷 Scan Team QR</button>
                 <button class="btn btn-secondary" onclick="closeTeamCheck()">Annuleren</button>
+            </div>
+        </div>
+        
+        <!-- Checking Teams Modal -->
+        <div id="checking-modal" class="modal">
+            <div class="modal-content">
+                <h3>🔍 Teams Controleren...</h3>
+                <div id="checking-list"></div>
             </div>
         </div>
         
@@ -727,6 +845,76 @@
         
         // ========== SUGGESTIE FUNCTIES ==========
         
+        // Switch game tab
+        function switchGameTab(tabId) {
+            // Update tab buttons
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            // If switching to history, render it
+            if (tabId === 'history-tab') {
+                renderHistory();
+            }
+        }
+        
+        // Render history
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            
+            if (gameState.history.length === 0) {
+                container.innerHTML = `
+                    <div class="info-box">
+                        <p style="text-align: center; color: #999;">Nog geen geschiedenis</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Reverse to show newest first
+            [...gameState.history].reverse().forEach(entry => {
+                const time = new Date(entry.timestamp).toLocaleTimeString('nl-NL', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const div = document.createElement('div');
+                div.className = 'checking-item';
+                div.style.flexDirection = 'column';
+                div.style.alignItems = 'flex-start';
+                
+                if (entry.type === 'suggestion') {
+                    let html = `
+                        <div style="font-weight: 600; color: #667eea; margin-bottom: 10px;">${time} - SUGGESTIE</div>
+                        <div style="font-size: 0.9em; margin-bottom: 8px;">
+                            👤 ${entry.suggestion.person.name}<br>
+                            🔪 ${entry.suggestion.weapon.name}<br>
+                            🏠 ${entry.suggestion.location.name}
+                        </div>
+                    `;
+                    
+                    if (entry.result.noMatch) {
+                        html += `<div style="color: #4caf50; font-weight: 600;">🎯 Geen team had deze kaarten!</div>`;
+                    } else {
+                        html += `<div style="color: #999;">→ Team ${entry.result.team} toonde:</div>`;
+                        entry.result.cards.forEach(card => {
+                            const icon = card.type === 'p' ? '👤' : card.type === 'w' ? '🔪' : '🏠';
+                            html += `<div style="margin-left: 15px; color: white;">${icon} ${card.name}</div>`;
+                        });
+                    }
+                    
+                    div.innerHTML = html;
+                }
+                
+                container.appendChild(div);
+            });
+        }
+        
         let scannedCardData = null;
         
         // Scan card
@@ -876,35 +1064,68 @@
             scannedCardData = null;
         }
         
-        // Check suggestion
-        function checkSuggestion() {
+        // Check suggestion with animation
+        async function checkSuggestion() {
             const suggestion = gameState.currentSuggestion;
             
-            // Check rotation order
+            // Show checking modal
+            document.getElementById('checking-modal').classList.add('active');
+            const checkingList = document.getElementById('checking-list');
+            checkingList.innerHTML = '';
+            
+            // Get check order
             const checkOrder = getCheckOrder();
             
             let matchFound = false;
             let matchTeam = null;
             
+            // Check each team with animation
             for (const teamNum of checkOrder) {
-                const teamCards = gameState.config.distribution[`team${teamNum}`];
+                // Add checking item
+                const item = document.createElement('div');
+                item.className = 'checking-item';
+                item.innerHTML = `
+                    <div class="team-label">Team ${teamNum}</div>
+                    <div class="status">
+                        <span class="checking-dots">Controleren</span>
+                    </div>
+                `;
+                checkingList.appendChild(item);
                 
-                // Check if team has any of the suggested cards
+                // Wait 1.5 seconds
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Check if team has cards
+                const teamCards = gameState.config.distribution[`team${teamNum}`];
                 const hasCard = teamCards.some(kcode => 
                     kcode === suggestion.person.kcode ||
                     kcode === suggestion.weapon.kcode ||
                     kcode === suggestion.location.kcode
                 );
                 
+                // Update result
+                const statusDiv = item.querySelector('.status');
                 if (hasCard) {
+                    statusDiv.innerHTML = '<span class="check-result has-card">✅ Heeft een kaart!</span>';
                     matchFound = true;
                     matchTeam = teamNum;
+                    
+                    // Wait 1 second before showing modal
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                     break;
+                } else {
+                    statusDiv.innerHTML = '<span class="check-result no-card">❌ Geen kaarten</span>';
                 }
+                
+                // Small delay before next team
+                await new Promise(resolve => setTimeout(resolve, 800));
             }
             
+            // Close checking modal
+            document.getElementById('checking-modal').classList.remove('active');
+            
             if (matchFound) {
-                // Show team check modal with button (not auto-start camera)
+                // Show team check modal
                 document.getElementById('team-check-message').textContent = 
                     `Team ${matchTeam} heeft een kaart!`;
                 
@@ -917,7 +1138,21 @@
                 document.getElementById('team-check-modal').classList.add('active');
                 
             } else {
-                // No match - mogelijk oplossingskaarten!
+                // No match - add final message to checking modal
+                checkingList.innerHTML += `
+                    <div class="success" style="margin-top: 20px; text-align: center;">
+                        <strong>🎯 Geen van de teams heeft deze kaarten!</strong><br>
+                        <span style="font-size: 0.9em;">Heb je de juiste oplossing gevonden?</span>
+                    </div>
+                `;
+                
+                // Show modal again for final message
+                document.getElementById('checking-modal').classList.add('active');
+                
+                // Wait 3 seconds then show result
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                document.getElementById('checking-modal').classList.remove('active');
+                
                 showSuggestionResult(null);
             }
         }
