@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Levend Cluedo - Speler App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #16213e;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #2d3561;
+            box-shadow: none;
+        }
+        
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        
+        .modal-content h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .card-display {
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .card-display .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .card-display .name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .card-display .type {
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .suggestion-box {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .suggestion-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #1a2942;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+        
+        .suggestion-item .label {
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .suggestion-item .value {
+            color: white;
+            font-weight: 600;
+            text-align: right;
+        }
+        
+        .suggestion-item .empty {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .rotation-info {
+            background: #2d3561;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #999;
+        }
+        
+        .modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-small {
+            padding: 12px;
+            font-size: 16px;
+            margin: 0;
+        }
+        
+        
+        #qr-reader {
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .info-box {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-box p {
+            line-height: 1.6;
+            color: #e3e3e3;
+        }
+        
+        .team-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .error {
+            background: #c62828;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .success {
+            background: #2e7d32;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕵️ Levend Cluedo</h1>
+        
+        <!-- Screen 1: Welcome -->
+        <div id="screen-welcome" class="screen active">
+            <div class="card">
+                <h2>Welkom Detective!</h2>
+                <div class="info-box">
+                    <p><strong>Stap 1:</strong> Scan je Team QR-code<br>
+                    <strong>Stap 2:</strong> Scan de Config QR-code<br>
+                    <strong>Stap 3:</strong> Start met spelen!</p>
+                </div>
+                <button class="btn" onclick="startTeamScan()">📷 Scan Team QR</button>
+            </div>
+        </div>
+        
+        <!-- Screen 2: Team Scan -->
+        <div id="screen-team-scan" class="screen">
+            <div class="card">
+                <h2>Scan Team QR-code</h2>
+                <div class="info-box">
+                    <p>Scan de QR-code die bij jouw team hoort</p>
+                </div>
+                <div id="qr-reader"></div>
+                <button class="btn btn-secondary" onclick="cancelScan()">Annuleren</button>
+            </div>
+        </div>
+        
+        <!-- Screen 3: Config Scan -->
+        <div id="screen-config-scan" class="screen">
+            <div class="card">
+                <h2>Scan Config QR-code</h2>
+                <div class="team-badge" id="team-badge"></div>
+                <div class="info-box">
+                    <p>Nu de spelconfiguratie scannen van de spelleider</p>
+                </div>
+                <div id="qr-reader-config"></div>
+                <button class="btn btn-secondary" onclick="backToWelcome()">Terug</button>
+            </div>
+        </div>
+        
+        <!-- Screen 4: Playing (Main Game) -->
+        <div id="screen-playing" class="screen">
+            <div class="card">
+                <div class="team-badge" id="team-badge-playing"></div>
+                
+                <div class="rotation-info" id="rotation-info"></div>
+                
+                <h2>Huidige Suggestie</h2>
+                <div class="suggestion-box">
+                    <div class="suggestion-item">
+                        <div>
+                            <div class="label">👤 Persoon:</div>
+                        </div>
+                        <div class="value" id="suggestion-person">
+                            <span class="empty">Scan een kaart</span>
+                        </div>
+                    </div>
+                    <div class="suggestion-item">
+                        <div>
+                            <div class="label">🔪 Wapen:</div>
+                        </div>
+                        <div class="value" id="suggestion-weapon">
+                            <span class="empty">Scan een kaart</span>
+                        </div>
+                    </div>
+                    <div class="suggestion-item">
+                        <div>
+                            <div class="label">🏠 Locatie:</div>
+                        </div>
+                        <div class="value" id="suggestion-location">
+                            <span class="empty">Scan een kaart</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="scanCard()">📷 Scan Kaart</button>
+                <button class="btn" id="check-suggestion-btn" onclick="checkSuggestion()" disabled>🔍 Controleer Suggestie</button>
+                
+                <h2 style="margin-top: 30px;">Mijn Kaarten</h2>
+                <div class="info-box">
+                    <div id="my-cards"></div>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="alert('Beschuldiging functie komt binnenkort!')" style="margin-top: 20px;">💀 Beschuldiging</button>
+                <button class="btn btn-secondary" onclick="resetApp()">🔄 Reset App</button>
+            </div>
+        </div>
+        
+        <!-- Card Scan Modal -->
+        <div id="card-scan-modal" class="modal">
+            <div class="modal-content">
+                <h3>Scan Kaart</h3>
+                <div id="qr-reader-card"></div>
+                <button class="btn btn-secondary" onclick="closeCardScan()">Annuleren</button>
+            </div>
+        </div>
+        
+        <!-- Card Confirm Modal -->
+        <div id="card-confirm-modal" class="modal">
+            <div class="modal-content">
+                <h3>Gescande Kaart</h3>
+                <div class="card-display">
+                    <div class="icon" id="confirm-card-icon"></div>
+                    <div class="name" id="confirm-card-name"></div>
+                    <div class="type" id="confirm-card-type"></div>
+                </div>
+                <div id="confirm-message" class="info-box"></div>
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary btn-small" onclick="closeCardConfirm()">Nee</button>
+                    <button class="btn btn-small" onclick="confirmAddCard()">Ja, toevoegen</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Suggestion Result Modal -->
+        <div id="suggestion-result-modal" class="modal">
+            <div class="modal-content">
+                <h3>Suggestie Resultaat</h3>
+                <div class="suggestion-box">
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <div id="result-person"></div>
+                        <div id="result-weapon"></div>
+                        <div id="result-location"></div>
+                    </div>
+                </div>
+                <div id="result-message"></div>
+                <button class="btn" onclick="closeResultModal()">OK</button>
+            </div>
+        </div>
+        
+        <!-- Team Check Modal -->
+        <div id="team-check-modal" class="modal">
+            <div class="modal-content">
+                <h3>Scan Team QR</h3>
+                <div class="info-box">
+                    <p id="team-check-message"></p>
+                </div>
+                <div id="qr-reader-team-check"></div>
+                <button class="btn btn-secondary" onclick="closeTeamCheck()">Annuleren</button>
+            </div>
+        </div>
+        
+        <!-- Error message placeholder -->
+        <div id="error-message" class="error hidden"></div>
+    </div>
+    
+    <script>
+        // Global state
+        let gameState = {
+            teamNumber: null,
+            teamName: null,
+            teamColor: null,
+            config: null,
+            myCards: [],
+            currentSuggestion: {
+                person: null,
+                weapon: null,
+                location: null
+            },
+            history: [],
+            scanner: null
+        };
+        
+        // Check for existing game on load
+        window.addEventListener('load', () => {
+            loadGameState();
+            
+            // Auto-save on page hide (iOS Safari compatible)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    saveGameState();
+                }
+            });
+            
+            // Also save on beforeunload (Android Chrome)
+            window.addEventListener('beforeunload', saveGameState);
+        });
+        
+        // Save game state to localStorage
+        function saveGameState() {
+            if (!gameState.teamNumber) return;
+            
+            const key = `cluedo_team${gameState.teamNumber}_state`;
+            try {
+                localStorage.setItem(key, JSON.stringify(gameState));
+                console.log('Game state saved');
+            } catch (err) {
+                console.error('Failed to save:', err);
+                showError('Kon spelstatus niet opslaan. Gebruik geen incognito mode!');
+            }
+        }
+        
+        // Load game state from localStorage
+        function loadGameState() {
+            // Try to find any existing team state
+            for (let i = 1; i <= 6; i++) {
+                const key = `cluedo_team${i}_state`;
+                const saved = localStorage.getItem(key);
+                if (saved) {
+                    try {
+                        gameState = JSON.parse(saved);
+                        console.log('Loaded saved game for team', i);
+                        
+                        // Go directly to playing screen
+                        showScreen('screen-playing');
+                        displayTeamInfo();
+                        displayMyCards();
+                        return;
+                    } catch (err) {
+                        console.error('Failed to load saved game:', err);
+                    }
+                }
+            }
+        }
+        
+        // Show screen
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        // Show error
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+        }
+        
+        // Start Team QR scan
+        function startTeamScan() {
+            showScreen('screen-team-scan');
+            
+            gameState.scanner = new Html5QrcodeScanner(
+                "qr-reader",
+                { 
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0
+                }
+            );
+            
+            gameState.scanner.render(onTeamQRScanned, onScanError);
+        }
+        
+        // Team QR scanned
+        function onTeamQRScanned(decodedText) {
+            console.log('Team QR scanned:', decodedText);
+            
+            try {
+                // Decompress
+                const qrData = JSON.parse(decodedText);
+                const decompressed = LZString.decompressFromBase64(qrData.data);
+                const teamData = JSON.parse(decompressed);
+                
+                if (teamData.type !== 'team') {
+                    showError('Dit is geen Team QR-code!');
+                    return;
+                }
+                
+                // Save team info
+                gameState.teamNumber = teamData.teamNumber;
+                gameState.teamName = teamData.teamName;
+                gameState.teamColor = teamData.teamColor;
+                
+                // Stop scanner
+                gameState.scanner.clear();
+                gameState.scanner = null;
+                
+                // Go to config scan
+                document.getElementById('team-badge').textContent = 
+                    `${teamData.teamName} (${teamData.teamColor})`;
+                
+                showScreen('screen-config-scan');
+                startConfigScan();
+                
+            } catch (err) {
+                console.error('Error parsing team QR:', err);
+                showError('Ongeldige Team QR-code: ' + err.message);
+            }
+        }
+        
+        // Start Config scan
+        function startConfigScan() {
+            gameState.scanner = new Html5QrcodeScanner(
+                "qr-reader-config",
+                { 
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0
+                }
+            );
+            
+            gameState.scanner.render(onConfigQRScanned, onScanError);
+        }
+        
+        // Config QR scanned
+        function onConfigQRScanned(decodedText) {
+            console.log('Config QR scanned');
+            
+            try {
+                // Decompress
+                const qrData = JSON.parse(decodedText);
+                const decompressed = LZString.decompressFromBase64(qrData.data);
+                const configData = JSON.parse(decompressed);
+                
+                if (configData.type !== 'config') {
+                    showError('Dit is geen Config QR-code!');
+                    return;
+                }
+                
+                // Save config
+                gameState.config = configData;
+                
+                // Get my cards
+                const myCardKCodes = configData.distribution[`team${gameState.teamNumber}`];
+                gameState.myCards = myCardKCodes.map(kcode => {
+                    const cardInfo = configData.cards[kcode];
+                    return {
+                        kcode: kcode,
+                        name: cardInfo.name,
+                        type: cardInfo.type
+                    };
+                });
+                
+                // Stop scanner
+                gameState.scanner.clear();
+                gameState.scanner = null;
+                
+                // Save and go to playing
+                saveGameState();
+                showScreen('screen-playing');
+                displayTeamInfo();
+                displayMyCards();
+                
+            } catch (err) {
+                console.error('Error parsing config QR:', err);
+                showError('Ongeldige Config QR-code: ' + err.message);
+            }
+        }
+        
+        // Scan error (ignore most)
+        function onScanError(errorMessage) {
+            // Only log real errors, not "no QR code found"
+            if (!errorMessage.includes('No MultiFormat Readers')) {
+                console.log('Scan error:', errorMessage);
+            }
+        }
+        
+        // Cancel scan
+        function cancelScan() {
+            if (gameState.scanner) {
+                gameState.scanner.clear();
+                gameState.scanner = null;
+            }
+            showScreen('screen-welcome');
+        }
+        
+        // Back to welcome
+        function backToWelcome() {
+            if (gameState.scanner) {
+                gameState.scanner.clear();
+                gameState.scanner = null;
+            }
+            gameState.teamNumber = null;
+            gameState.teamName = null;
+            gameState.teamColor = null;
+            showScreen('screen-welcome');
+        }
+        
+        // Display team info
+        function displayTeamInfo() {
+            document.getElementById('team-badge-playing').textContent = 
+                `${gameState.teamName} (${gameState.teamColor})`;
+            
+            // Show rotation order
+            const rotationDiv = document.getElementById('rotation-info');
+            const checkOrder = getCheckOrder();
+            const teamNames = checkOrder.map(num => {
+                const team = gameState.config.distribution[`team${num}`];
+                return `Team ${num}`;
+            });
+            rotationDiv.textContent = `🔄 Controle volgorde: ${teamNames.join(' → ')}`;
+        }
+        
+        // Get check order for this team
+        function getCheckOrder() {
+            const numTeams = Object.keys(gameState.config.distribution).length;
+            const teams = [];
+            for (let i = 1; i <= numTeams; i++) {
+                teams.push(i);
+            }
+            
+            const myIndex = teams.indexOf(gameState.teamNumber);
+            return [...teams.slice(myIndex + 1), ...teams.slice(0, myIndex)];
+        }
+        
+        // Display my cards
+        function displayMyCards() {
+            const container = document.getElementById('my-cards');
+            container.innerHTML = '';
+            
+            gameState.myCards.forEach(card => {
+                const icon = card.type === 'p' ? '👤' : card.type === 'w' ? '🔪' : '🏠';
+                const div = document.createElement('div');
+                div.style.cssText = 'background: #0f3460; padding: 10px; border-radius: 6px; margin: 5px 0;';
+                div.textContent = `${icon} ${card.name}`;
+                container.appendChild(div);
+            });
+        }
+        
+        // Reset app
+        function resetApp() {
+            if (!confirm('Weet je zeker dat je de app wilt resetten? Al je voortgang gaat verloren!')) {
+                return;
+            }
+            
+            // Clear all team states
+            for (let i = 1; i <= 6; i++) {
+                localStorage.removeItem(`cluedo_team${i}_state`);
+            }
+            
+            // Reset state
+            gameState = {
+                teamNumber: null,
+                teamName: null,
+                teamColor: null,
+                config: null,
+                myCards: [],
+                currentSuggestion: {
+                    person: null,
+                    weapon: null,
+                    location: null
+                },
+                history: [],
+                scanner: null
+            };
+            
+            // Back to welcome
+            showScreen('screen-welcome');
+        }
+        
+        // ========== SUGGESTIE FUNCTIES ==========
+        
+        let scannedCardData = null;
+        
+        // Scan card
+        function scanCard() {
+            document.getElementById('card-scan-modal').classList.add('active');
+            
+            gameState.scanner = new Html5QrcodeScanner(
+                "qr-reader-card",
+                { 
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                }
+            );
+            
+            gameState.scanner.render(onCardScanned, onScanError);
+        }
+        
+        // Card scanned
+        function onCardScanned(decodedText) {
+            console.log('Card scanned');
+            
+            try {
+                // Decompress
+                const qrData = JSON.parse(decodedText);
+                const decompressed = LZString.decompressFromBase64(qrData.data);
+                const cardData = JSON.parse(decompressed);
+                
+                if (cardData.type !== 'card') {
+                    showError('Dit is geen kaart QR-code!');
+                    return;
+                }
+                
+                // Get card info from config
+                const kcode = cardData.id;
+                const cardInfo = gameState.config.cards[kcode];
+                
+                if (!cardInfo) {
+                    showError('Onbekende kaart: ' + kcode);
+                    return;
+                }
+                
+                scannedCardData = {
+                    kcode: kcode,
+                    name: cardInfo.name,
+                    type: cardInfo.type
+                };
+                
+                // Stop scanner
+                gameState.scanner.clear();
+                gameState.scanner = null;
+                
+                // Show confirm modal
+                showCardConfirm();
+                
+            } catch (err) {
+                console.error('Error parsing card QR:', err);
+                showError('Ongeldige kaart QR-code: ' + err.message);
+            }
+        }
+        
+        // Show card confirm modal
+        function showCardConfirm() {
+            const card = scannedCardData;
+            const typeNames = { p: 'Persoon', w: 'Wapen', l: 'Locatie' };
+            const icons = { p: '👤', w: '🔪', l: '🏠' };
+            
+            document.getElementById('confirm-card-icon').textContent = icons[card.type];
+            document.getElementById('confirm-card-name').textContent = card.name;
+            document.getElementById('confirm-card-type').textContent = typeNames[card.type];
+            
+            // Check if we already have this type
+            const currentCard = gameState.currentSuggestion[
+                card.type === 'p' ? 'person' : card.type === 'w' ? 'weapon' : 'location'
+            ];
+            
+            // Check if it's own card
+            const isOwnCard = gameState.myCards.some(c => c.kcode === card.kcode);
+            
+            let message = 'Toevoegen aan suggestie?';
+            
+            if (currentCard) {
+                message = `Je hebt al een ${typeNames[card.type].toLowerCase()}: <strong>${currentCard.name}</strong><br>Wil je deze vervangen?`;
+            }
+            
+            if (isOwnCard) {
+                message += '<br><br>⚠️ <strong>Dit is een van jullie eigen kaarten!</strong>';
+            }
+            
+            document.getElementById('confirm-message').innerHTML = message;
+            
+            // Close scan modal, open confirm modal
+            document.getElementById('card-scan-modal').classList.remove('active');
+            document.getElementById('card-confirm-modal').classList.add('active');
+        }
+        
+        // Confirm add card
+        function confirmAddCard() {
+            const card = scannedCardData;
+            
+            // Add to suggestion
+            if (card.type === 'p') {
+                gameState.currentSuggestion.person = card;
+                document.getElementById('suggestion-person').innerHTML = 
+                    `<span>👤 ${card.name}</span>`;
+            } else if (card.type === 'w') {
+                gameState.currentSuggestion.weapon = card;
+                document.getElementById('suggestion-weapon').innerHTML = 
+                    `<span>🔪 ${card.name}</span>`;
+            } else if (card.type === 'l') {
+                gameState.currentSuggestion.location = card;
+                document.getElementById('suggestion-location').innerHTML = 
+                    `<span>🏠 ${card.name}</span>`;
+            }
+            
+            // Update check button
+            updateCheckButton();
+            
+            // Close modal
+            closeCardConfirm();
+            
+            // Save state
+            saveGameState();
+        }
+        
+        // Update check button
+        function updateCheckButton() {
+            const btn = document.getElementById('check-suggestion-btn');
+            const complete = gameState.currentSuggestion.person && 
+                           gameState.currentSuggestion.weapon && 
+                           gameState.currentSuggestion.location;
+            
+            btn.disabled = !complete;
+        }
+        
+        // Close card scan
+        function closeCardScan() {
+            if (gameState.scanner) {
+                gameState.scanner.clear();
+                gameState.scanner = null;
+            }
+            document.getElementById('card-scan-modal').classList.remove('active');
+        }
+        
+        // Close card confirm
+        function closeCardConfirm() {
+            document.getElementById('card-confirm-modal').classList.remove('active');
+            scannedCardData = null;
+        }
+        
+        // Check suggestion
+        function checkSuggestion() {
+            const suggestion = gameState.currentSuggestion;
+            
+            // Check rotation order
+            const checkOrder = getCheckOrder();
+            
+            let matchFound = false;
+            let matchTeam = null;
+            
+            for (const teamNum of checkOrder) {
+                const teamCards = gameState.config.distribution[`team${teamNum}`];
+                
+                // Check if team has any of the suggested cards
+                const hasCard = teamCards.some(kcode => 
+                    kcode === suggestion.person.kcode ||
+                    kcode === suggestion.weapon.kcode ||
+                    kcode === suggestion.location.kcode
+                );
+                
+                if (hasCard) {
+                    matchFound = true;
+                    matchTeam = teamNum;
+                    break;
+                }
+            }
+            
+            if (matchFound) {
+                // Show team check modal
+                document.getElementById('team-check-message').textContent = 
+                    `Team ${matchTeam} heeft een kaart! Ga naar dat team en scan hun Team QR-code.`;
+                document.getElementById('team-check-modal').classList.add('active');
+                
+                gameState.currentCheckTeam = matchTeam;
+                
+                // Start scanner
+                gameState.scanner = new Html5QrcodeScanner(
+                    "qr-reader-team-check",
+                    { 
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    }
+                );
+                
+                gameState.scanner.render(onTeamCheckScanned, onScanError);
+                
+            } else {
+                // No match - mogelijk oplossingskaarten!
+                showSuggestionResult(null);
+            }
+        }
+        
+        // Team check scanned
+        function onTeamCheckScanned(decodedText) {
+            try {
+                const qrData = JSON.parse(decodedText);
+                const decompressed = LZString.decompressFromBase64(qrData.data);
+                const teamData = JSON.parse(decompressed);
+                
+                if (teamData.type !== 'team') {
+                    showError('Dit is geen Team QR-code!');
+                    return;
+                }
+                
+                if (teamData.teamNumber !== gameState.currentCheckTeam) {
+                    showError(`Dit is Team ${teamData.teamNumber}, je moet Team ${gameState.currentCheckTeam} scannen!`);
+                    return;
+                }
+                
+                // Correct team! Stop scanner
+                gameState.scanner.clear();
+                gameState.scanner = null;
+                
+                // Close team check modal
+                document.getElementById('team-check-modal').classList.remove('active');
+                
+                // Show result
+                showSuggestionResult(teamData.teamNumber);
+                
+            } catch (err) {
+                console.error('Error parsing team QR:', err);
+                showError('Ongeldige Team QR-code');
+            }
+        }
+        
+        // Show suggestion result
+        function showSuggestionResult(matchTeam) {
+            const suggestion = gameState.currentSuggestion;
+            
+            // Display suggestion
+            document.getElementById('result-person').textContent = `👤 ${suggestion.person.name}`;
+            document.getElementById('result-weapon').textContent = `🔪 ${suggestion.weapon.name}`;
+            document.getElementById('result-location').textContent = `🏠 ${suggestion.location.name}`;
+            
+            const resultMsg = document.getElementById('result-message');
+            
+            if (matchTeam) {
+                // Find which cards the team has
+                const teamCards = gameState.config.distribution[`team${matchTeam}`];
+                const matches = [];
+                
+                if (teamCards.includes(suggestion.person.kcode)) matches.push(suggestion.person);
+                if (teamCards.includes(suggestion.weapon.kcode)) matches.push(suggestion.weapon);
+                if (teamCards.includes(suggestion.location.kcode)) matches.push(suggestion.location);
+                
+                // Sort by K-code (lowest first)
+                matches.sort((a, b) => {
+                    const numA = parseInt(a.kcode.substring(1));
+                    const numB = parseInt(b.kcode.substring(1));
+                    return numA - numB;
+                });
+                
+                // Show cards based on maxCardsToShow
+                const maxShow = gameState.config.settings.maxCardsToShow;
+                const cardsToShow = matches.slice(0, maxShow);
+                
+                let html = `<div class="success">✅ Team ${matchTeam} toont:</div>`;
+                html += '<div style="margin: 15px 0;">';
+                cardsToShow.forEach(card => {
+                    const icon = card.type === 'p' ? '👤' : card.type === 'w' ? '🔪' : '🏠';
+                    html += `<div style="background: #0f3460; padding: 10px; border-radius: 6px; margin: 5px 0;">${icon} ${card.name}</div>`;
+                });
+                html += '</div>';
+                
+                if (matches.length > maxShow) {
+                    html += '<div class="info-box">Dit team kan meer kaarten hebben. Maximaal ' + maxShow + ' kaarten worden getoond.</div>';
+                } else {
+                    html += '<div class="info-box">Dit zijn alle kaarten die dit team heeft van deze suggestie.</div>';
+                }
+                
+                resultMsg.innerHTML = html;
+                
+                // Save to history
+                gameState.history.push({
+                    timestamp: Date.now(),
+                    type: 'suggestion',
+                    suggestion: {...suggestion},
+                    result: {
+                        team: matchTeam,
+                        cards: cardsToShow
+                    }
+                });
+                
+            } else {
+                // No match
+                resultMsg.innerHTML = `
+                    <div class="info-box" style="background: #2e7d32; border-left-color: #4caf50;">
+                        🎯 <strong>Geen team heeft deze kaarten!</strong><br>
+                        Dit zijn mogelijk oplossingskaarten!
+                    </div>
+                `;
+                
+                // Save to history
+                gameState.history.push({
+                    timestamp: Date.now(),
+                    type: 'suggestion',
+                    suggestion: {...suggestion},
+                    result: {
+                        noMatch: true
+                    }
+                });
+            }
+            
+            // Show modal
+            document.getElementById('suggestion-result-modal').classList.add('active');
+            
+            // Save state
+            saveGameState();
+        }
+        
+        // Close result modal
+        function closeResultModal() {
+            document.getElementById('suggestion-result-modal').classList.remove('active');
+            
+            // Clear current suggestion
+            gameState.currentSuggestion = {
+                person: null,
+                weapon: null,
+                location: null
+            };
+            
+            document.getElementById('suggestion-person').innerHTML = '<span class="empty">Scan een kaart</span>';
+            document.getElementById('suggestion-weapon').innerHTML = '<span class="empty">Scan een kaart</span>';
+            document.getElementById('suggestion-location').innerHTML = '<span class="empty">Scan een kaart</span>';
+            
+            updateCheckButton();
+            saveGameState();
+        }
+        
+        // Close team check
+        function closeTeamCheck() {
+            if (gameState.scanner) {
+                gameState.scanner.clear();
+                gameState.scanner = null;
+            }
+            document.getElementById('team-check-modal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
