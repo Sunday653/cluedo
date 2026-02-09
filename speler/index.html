@@ -41,6 +41,13 @@
             font-size: 2em;
         }
         
+        h1.team-colored {
+            background: var(--team-color, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
         .screen {
             display: none;
             animation: fadeIn 0.3s;
@@ -213,25 +220,29 @@
         
         /* Tabs */
         .tabs {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             background: #0f3460;
             border-radius: 12px;
             padding: 5px;
-            margin-bottom: 20px;
             gap: 5px;
         }
         
+        .tabs:first-of-type {
+            margin-bottom: 5px;
+        }
+        
         .tab {
-            flex: 1;
-            padding: 12px;
+            padding: 12px 8px;
             background: transparent;
             color: #999;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            text-align: center;
         }
         
         .tab.active {
@@ -412,25 +423,24 @@
         <!-- Screen 4: Playing (Main Game) -->
         <div id="screen-playing" class="screen">
             <div class="card">
-                <div class="team-badge" id="team-badge-playing"></div>
-                
                 <!-- Tabs - Row 1 -->
                 <div class="tabs">
-                    <button class="tab" onclick="switchGameTab('my-cards-tab')">🎴 Mijn Kaarten</button>
+                    <button class="tab" onclick="switchGameTab('my-cards-tab')">🃏 Kaarten</button>
                     <button class="tab active" onclick="switchGameTab('suggestion-tab')">🔍 Suggestie</button>
                     <button class="tab" onclick="switchGameTab('history-tab')">📜 Logboek</button>
                 </div>
                 
                 <!-- Tabs - Row 2 -->
-                <div class="tabs" style="margin-top: 10px;">
-                    <button class="tab" onclick="switchGameTab('accusation-tab')">💀 Beschuldiging</button>
-                    <button class="tab" onclick="switchGameTab('info-tab')">ℹ️ Informatie</button>
+                <div class="tabs">
+                    <button class="tab" onclick="switchGameTab('accusation-tab')">👩🏻‍⚖️ Beschuldig</button>
+                    <button class="tab" onclick="switchGameTab('info-tab')">ℹ️ Info</button>
                     <button class="tab" onclick="switchGameTab('reset-tab')">🔄 Reset</button>
                 </div>
                 
                 <!-- Tab 1: Mijn Kaarten -->
                 <div id="my-cards-tab" class="tab-content">
-                    <h2>Mijn Kaarten</h2>
+                    <div class="team-badge" id="team-badge-cards" style="margin-bottom: 15px;"></div>
+                    <h2>Jouw Kaarten</h2>
                     <div class="info-box">
                         <div id="my-cards"></div>
                     </div>
@@ -438,14 +448,14 @@
                 
                 <!-- Tab 2: Suggestie -->
                 <div id="suggestion-tab" class="tab-content active">
-                    <h2>Suggestie Maken</h2>
-                    <div class="suggestion-box">
+                    <div class="rotation-info" id="rotation-info" style="margin-bottom: 10px; padding: 8px; font-size: 0.85em;"></div>
+                    <div class="suggestion-box" style="margin-bottom: 10px;">
                         <div class="suggestion-item">
                             <div>
                                 <div class="label">👤 Persoon:</div>
                             </div>
                             <div class="value" id="suggestion-person">
-                                <span class="empty">Scan een kaart</span>
+                                <span class="empty">Scan kaart</span>
                             </div>
                         </div>
                         <div class="suggestion-item">
@@ -453,7 +463,7 @@
                                 <div class="label">🔪 Wapen:</div>
                             </div>
                             <div class="value" id="suggestion-weapon">
-                                <span class="empty">Scan een kaart</span>
+                                <span class="empty">Scan kaart</span>
                             </div>
                         </div>
                         <div class="suggestion-item">
@@ -461,13 +471,13 @@
                                 <div class="label">🏠 Locatie:</div>
                             </div>
                             <div class="value" id="suggestion-location">
-                                <span class="empty">Scan een kaart</span>
+                                <span class="empty">Scan kaart</span>
                             </div>
                         </div>
                     </div>
                     
                     <button class="btn" onclick="scanCard()">📷 Scan Kaart</button>
-                    <button class="btn" id="check-suggestion-btn" onclick="checkSuggestion()" disabled>🔍 Controleer Suggestie</button>
+                    <button class="btn" id="check-suggestion-btn" onclick="checkSuggestion()" disabled>🔍 Controleer</button>
                 </div>
                 
                 <!-- Tab 3: Logboek -->
@@ -820,17 +830,28 @@
         
         // Display team info
         function displayTeamInfo() {
-            document.getElementById('team-badge-playing').textContent = 
-                `${gameState.teamName} (${gameState.teamColor})`;
+            const teamText = `Kaarten van Team ${gameState.teamColor}`;
+            document.getElementById('team-badge-cards').textContent = teamText;
+            
+            // Set title color based on team color
+            const h1 = document.querySelector('h1');
+            const colorMap = {
+                'Rood': '#dc3545',
+                'Blauw': '#007bff',
+                'Groen': '#28a745',
+                'Geel': '#ffc107',
+                'Paars': '#6f42c1',
+                'Oranje': '#fd7e14'
+            };
+            const color = colorMap[gameState.teamColor] || '#667eea';
+            h1.style.setProperty('--team-color', color);
+            h1.classList.add('team-colored');
             
             // Show rotation order
             const rotationDiv = document.getElementById('rotation-info');
             const checkOrder = getCheckOrder();
-            const teamNames = checkOrder.map(num => {
-                const team = gameState.config.distribution[`team${num}`];
-                return `Team ${num}`;
-            });
-            rotationDiv.textContent = `🔄 Controle volgorde: ${teamNames.join(' → ')}`;
+            const teamNames = checkOrder.map(num => `Team ${num}`);
+            rotationDiv.textContent = `Controle: ${teamNames.join(' → ')}`;
         }
         
         // Get check order for this team
