@@ -415,11 +415,12 @@
         <!-- Team Check Modal -->
         <div id="team-check-modal" class="modal">
             <div class="modal-content">
-                <h3>Scan Team QR</h3>
-                <div class="info-box">
-                    <p id="team-check-message"></p>
+                <h3>Team Match Gevonden!</h3>
+                <div class="success" style="margin-bottom: 15px;">
+                    <span id="team-check-message"></span>
                 </div>
-                <div id="qr-reader-team-check"></div>
+                <div id="qr-reader-team-check" class="hidden"></div>
+                <button class="btn" id="start-team-scan-btn" onclick="startTeamScan()">📷 Scan Team QR</button>
                 <button class="btn btn-secondary" onclick="closeTeamCheck()">Annuleren</button>
             </div>
         </div>
@@ -903,28 +904,38 @@
             }
             
             if (matchFound) {
-                // Show team check modal
+                // Show team check modal with button (not auto-start camera)
                 document.getElementById('team-check-message').textContent = 
-                    `Team ${matchTeam} heeft een kaart! Ga naar dat team en scan hun Team QR-code.`;
-                document.getElementById('team-check-modal').classList.add('active');
+                    `Team ${matchTeam} heeft een kaart!`;
                 
                 gameState.currentCheckTeam = matchTeam;
                 
-                // Start scanner
-                gameState.scanner = new Html5QrcodeScanner(
-                    "qr-reader-team-check",
-                    { 
-                        fps: 10,
-                        qrbox: { width: 250, height: 250 }
-                    }
-                );
+                // Reset scanner UI
+                document.getElementById('qr-reader-team-check').classList.add('hidden');
+                document.getElementById('start-team-scan-btn').classList.remove('hidden');
                 
-                gameState.scanner.render(onTeamCheckScanned, onScanError);
+                document.getElementById('team-check-modal').classList.add('active');
                 
             } else {
                 // No match - mogelijk oplossingskaarten!
                 showSuggestionResult(null);
             }
+        }
+        
+        // Start team scan (called by button)
+        function startTeamScan() {
+            document.getElementById('start-team-scan-btn').classList.add('hidden');
+            document.getElementById('qr-reader-team-check').classList.remove('hidden');
+            
+            gameState.scanner = new Html5QrcodeScanner(
+                "qr-reader-team-check",
+                { 
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                }
+            );
+            
+            gameState.scanner.render(onTeamCheckScanned, onScanError);
         }
         
         // Team check scanned
