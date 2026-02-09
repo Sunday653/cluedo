@@ -420,7 +420,7 @@
                     <span id="team-check-message"></span>
                 </div>
                 <div id="qr-reader-team-check" class="hidden"></div>
-                <button class="btn" id="start-team-scan-btn" onclick="startTeamScan()">📷 Scan Team QR</button>
+                <button class="btn" id="start-team-scan-btn" onclick="startTeamCheckScan()">📷 Scan Team QR</button>
                 <button class="btn btn-secondary" onclick="closeTeamCheck()">Annuleren</button>
             </div>
         </div>
@@ -922,8 +922,8 @@
             }
         }
         
-        // Start team scan (called by button)
-        function startTeamScan() {
+        // Start team check scan (called by button in suggestion flow)
+        function startTeamCheckScan() {
             document.getElementById('start-team-scan-btn').classList.add('hidden');
             document.getElementById('qr-reader-team-check').classList.remove('hidden');
             
