@@ -604,6 +604,15 @@
         
         // Check for existing game on load
         window.addEventListener('load', () => {
+            // Check for reset parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('reset')) {
+                performReset();
+                // Remove parameter from URL without reload
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return;
+            }
+            
             loadGameState();
             
             // Auto-save on page hide (iOS Safari compatible)
@@ -855,7 +864,11 @@
             if (!confirm('Weet je zeker dat je de app wilt resetten? Al je voortgang gaat verloren!')) {
                 return;
             }
-            
+            performReset();
+        }
+        
+        // Perform reset (used by both button and URL parameter)
+        function performReset() {
             // Clear all team states
             for (let i = 1; i <= 6; i++) {
                 localStorage.removeItem(`cluedo_team${i}_state`);
@@ -879,6 +892,8 @@
             
             // Back to welcome
             showScreen('screen-welcome');
+            
+            console.log('App reset completed');
         }
         
         // ========== SUGGESTIE FUNCTIES ==========

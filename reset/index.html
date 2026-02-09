@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Levend Cluedo - Reset</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+            text-align: left;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Reset Tool</h1>
+        
+        <div id="initial-view">
+            <div class="warning">
+                <strong>⚠️ Waarschuwing:</strong><br><br>
+                Deze tool verwijdert alle opgeslagen speldata van ALLE teams:
+                <ul style="margin: 10px 0 10px 20px;">
+                    <li>Team identificatie</li>
+                    <li>Spelconfiguratie</li>
+                    <li>Geschiedenis</li>
+                    <li>Huidige suggesties</li>
+                </ul>
+                Deze actie kan <strong>niet</strong> ongedaan worden gemaakt!
+            </div>
+            
+            <div class="info">
+                📱 <strong>Tip:</strong> Je kunt ook <code>?reset</code> toevoegen aan de URL van de speler app om te resetten.
+            </div>
+            
+            <button class="btn btn-danger" onclick="performReset()">🗑️ Reset Alle Data</button>
+            <button class="btn btn-secondary" onclick="window.close()">Annuleren</button>
+        </div>
+        
+        <div id="success-view" class="hidden">
+            <div class="success">
+                <strong>✅ Reset Voltooid!</strong><br><br>
+                Alle speldata is verwijderd. Je kunt de app nu opnieuw opstarten.
+            </div>
+            
+            <button class="btn" onclick="location.reload()">🔄 Opnieuw</button>
+            <button class="btn btn-secondary" onclick="window.close()">Sluiten</button>
+        </div>
+    </div>
+    
+    <script>
+        function performReset() {
+            if (!confirm('Weet je het ZEKER? Alle speldata wordt permanent verwijderd!')) {
+                return;
+            }
+            
+            // Clear all team states (1-6 teams mogelijk)
+            for (let i = 1; i <= 6; i++) {
+                localStorage.removeItem(`cluedo_team${i}_state`);
+            }
+            
+            console.log('All game data cleared');
+            
+            // Show success view
+            document.getElementById('initial-view').classList.add('hidden');
+            document.getElementById('success-view').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
