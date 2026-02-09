@@ -1213,18 +1213,31 @@
         
         // Start team check scan (called by button in suggestion flow)
         function startTeamCheckScan() {
+            // Clear any existing scanner first
+            if (gameState.scanner) {
+                try {
+                    gameState.scanner.clear();
+                } catch (e) {
+                    console.log('Error clearing scanner:', e);
+                }
+                gameState.scanner = null;
+            }
+            
             document.getElementById('start-team-scan-btn').classList.add('hidden');
             document.getElementById('qr-reader-team-check').classList.remove('hidden');
             
-            gameState.scanner = new Html5QrcodeScanner(
-                "qr-reader-team-check",
-                { 
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 }
-                }
-            );
-            
-            gameState.scanner.render(onTeamCheckScanned, onScanError);
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                gameState.scanner = new Html5QrcodeScanner(
+                    "qr-reader-team-check",
+                    { 
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    }
+                );
+                
+                gameState.scanner.render(onTeamCheckScanned, onScanError);
+            }, 100);
         }
         
         // Team check scanned
