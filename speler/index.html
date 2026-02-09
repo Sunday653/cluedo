@@ -413,13 +413,19 @@
         <div id="screen-playing" class="screen">
             <div class="card">
                 <div class="team-badge" id="team-badge-playing"></div>
-                <div class="rotation-info" id="rotation-info"></div>
                 
-                <!-- Tabs -->
+                <!-- Tabs - Row 1 -->
                 <div class="tabs">
                     <button class="tab" onclick="switchGameTab('my-cards-tab')">🎴 Mijn Kaarten</button>
                     <button class="tab active" onclick="switchGameTab('suggestion-tab')">🔍 Suggestie</button>
                     <button class="tab" onclick="switchGameTab('history-tab')">📜 Logboek</button>
+                </div>
+                
+                <!-- Tabs - Row 2 -->
+                <div class="tabs" style="margin-top: 10px;">
+                    <button class="tab" onclick="switchGameTab('accusation-tab')">💀 Beschuldiging</button>
+                    <button class="tab" onclick="switchGameTab('info-tab')">ℹ️ Informatie</button>
+                    <button class="tab" onclick="switchGameTab('reset-tab')">🔄 Reset</button>
                 </div>
                 
                 <!-- Tab 1: Mijn Kaarten -->
@@ -474,9 +480,41 @@
                     </div>
                 </div>
                 
-                <!-- Bottom buttons -->
-                <button class="btn btn-secondary" onclick="alert('Beschuldiging functie komt binnenkort!')" style="margin-top: 30px;">💀 Beschuldiging</button>
-                <button class="btn btn-secondary" onclick="resetApp()">🔄 Reset App</button>
+                <!-- Tab 4: Beschuldiging -->
+                <div id="accusation-tab" class="tab-content">
+                    <h2>Beschuldiging</h2>
+                    <div class="info-box">
+                        <p>⚠️ Let op: Bij een foute beschuldiging krijg je een tijdstraf!</p>
+                    </div>
+                    <button class="btn" onclick="alert('Scan de beschuldigings QR-code bij de spelleider')">💀 Scan Beschuldigings QR</button>
+                </div>
+                
+                <!-- Tab 5: Informatie -->
+                <div id="info-tab" class="tab-content">
+                    <h2>Informatie</h2>
+                    <div class="rotation-info" id="rotation-info"></div>
+                    <div class="info-box" style="margin-top: 15px;">
+                        <h3 style="color: #667eea; margin-bottom: 10px;">Hoe werkt het spel?</h3>
+                        <p style="line-height: 1.6; color: #e3e3e3;">
+                            <strong>Suggestie doen:</strong><br>
+                            Scan 3 kaarten (persoon, wapen, locatie) en controleer of andere teams deze hebben.<br><br>
+                            <strong>Controle volgorde:</strong><br>
+                            Teams worden gecontroleerd in de bovenstaande volgorde. Het eerste team met een kaart toont deze.<br><br>
+                            <strong>Beschuldiging:</strong><br>
+                            Als je denkt dat je de oplossing weet, scan de beschuldigings QR bij de spelleider.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Tab 6: Reset -->
+                <div id="reset-tab" class="tab-content">
+                    <h2>Reset App</h2>
+                    <div class="info-box">
+                        <p style="color: #ff6b6b;">⚠️ <strong>Waarschuwing:</strong><br>
+                        Dit verwijdert al je voortgang en geschiedenis. Deze actie kan niet ongedaan worden gemaakt.</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="resetApp()" style="background: #dc3545;">🔄 Reset App</button>
+                </div>
             </div>
         </div>
         
@@ -1014,19 +1052,20 @@
         function confirmAddCard() {
             const card = scannedCardData;
             
-            // Add to suggestion
+            // Add to suggestion (zonder emoji, die zit al in card.name van de display)
             if (card.type === 'p') {
                 gameState.currentSuggestion.person = card;
                 document.getElementById('suggestion-person').innerHTML = 
-                    `<span>👤 ${card.name}</span>`;
+                    `<span>${card.name}</span>`;
             } else if (card.type === 'w') {
                 gameState.currentSuggestion.weapon = card;
                 document.getElementById('suggestion-weapon').innerHTML = 
-                    `<span>🔪 ${card.name}</span>`;
+                    `<span>${card.name}</span>`;
             } else if (card.type === 'l') {
                 gameState.currentSuggestion.location = card;
                 document.getElementById('suggestion-location').innerHTML = 
-                    `<span>🏠 ${card.name}</span>`;
+                    `<span>${card.name}</span>`;
+            }
             }
             
             // Update check button
@@ -1092,8 +1131,8 @@
                 `;
                 checkingList.appendChild(item);
                 
-                // Wait 1.5 seconds
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // Wait 4 seconds
+                await new Promise(resolve => setTimeout(resolve, 4000));
                 
                 // Check if team has cards
                 const teamCards = gameState.config.distribution[`team${teamNum}`];
