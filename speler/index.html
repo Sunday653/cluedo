@@ -902,7 +902,13 @@
         function switchGameTab(tabId) {
             // Update tab buttons
             document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            // Find the clicked tab by matching the onclick attribute
+            const tabs = document.querySelectorAll('.tabs .tab');
+            tabs.forEach(tab => {
+                if (tab.getAttribute('onclick').includes(tabId)) {
+                    tab.classList.add('active');
+                }
+            });
             
             // Update tab content
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1080,7 +1086,6 @@
                 gameState.currentSuggestion.location = card;
                 document.getElementById('suggestion-location').innerHTML = 
                     `<span>${card.name}</span>`;
-            }
             }
             
             // Update check button
