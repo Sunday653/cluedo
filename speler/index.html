@@ -448,7 +448,6 @@
                 
                 <!-- Tab 2: Suggestie -->
                 <div id="suggestion-tab" class="tab-content active">
-                    <div class="rotation-info" id="rotation-info" style="margin-bottom: 10px; padding: 8px; font-size: 0.85em;"></div>
                     <div class="suggestion-box" style="margin-bottom: 10px;">
                         <div class="suggestion-item">
                             <div>
@@ -727,10 +726,16 @@
                 gameState.scanner.clear();
                 gameState.scanner = null;
                 
-                // Go to config scan
-                document.getElementById('team-badge').textContent = 
-                    `${teamData.teamName} (${teamData.teamColor})`;
+                // Show success message
+                const badge = document.getElementById('team-badge');
+                badge.innerHTML = `
+                    <div class="success" style="margin-bottom: 15px;">
+                        ✅ <strong>Team succesvol gescand!</strong><br>
+                        Je bent: ${teamData.teamName} (${teamData.teamColor})
+                    </div>
+                `;
                 
+                // Go to config scan
                 showScreen('screen-config-scan');
                 startConfigScan();
                 
@@ -790,6 +795,10 @@
                 // Save and go to playing
                 saveGameState();
                 showScreen('screen-playing');
+                
+                // Start on Kaarten tab
+                switchGameTab('my-cards-tab');
+                
                 displayTeamInfo();
                 displayMyCards();
                 
@@ -833,8 +842,7 @@
             const teamText = `Kaarten van Team ${gameState.teamColor}`;
             document.getElementById('team-badge-cards').textContent = teamText;
             
-            // Set title color based on team color
-            const h1 = document.querySelector('h1');
+            // Get team color
             const colorMap = {
                 'Rood': '#dc3545',
                 'Blauw': '#007bff',
@@ -844,14 +852,43 @@
                 'Oranje': '#fd7e14'
             };
             const color = colorMap[gameState.teamColor] || '#667eea';
+            
+            // Set title color
+            const h1 = document.querySelector('h1');
             h1.style.setProperty('--team-color', color);
             h1.classList.add('team-colored');
+            
+            // Set active tab button color
+            const style = document.createElement('style');
+            style.id = 'team-color-style';
+            // Remove old style if exists
+            const oldStyle = document.getElementById('team-color-style');
+            if (oldStyle) oldStyle.remove();
+            
+            style.textContent = `
+                .tab.active {
+                    background: ${color} !important;
+                }
+                .btn:not(.btn-secondary):not(:disabled) {
+                    background: ${color} !important;
+                }
+                h2, h3 {
+                    color: ${color} !important;
+                }
+                .info-box {
+                    border-left-color: ${color} !important;
+                }
+                .team-badge {
+                    background: ${color} !important;
+                }
+            `;
+            document.head.appendChild(style);
             
             // Show rotation order
             const rotationDiv = document.getElementById('rotation-info');
             const checkOrder = getCheckOrder();
             const teamNames = checkOrder.map(num => `Team ${num}`);
-            rotationDiv.textContent = `Controle: ${teamNames.join(' → ')}`;
+            rotationDiv.innerHTML = `<strong>Controle volgorde:</strong><br>${teamNames.join(' → ')}`;
         }
         
         // Get check order for this team
