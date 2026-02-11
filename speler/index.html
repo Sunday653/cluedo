@@ -869,8 +869,12 @@
                 .tab.active {
                     background: ${color} !important;
                 }
-                .btn:not(.btn-secondary):not(:disabled) {
+                .btn:not(.btn-secondary) {
                     background: ${color} !important;
+                }
+                .btn:not(.btn-secondary):disabled {
+                    background: ${color} !important;
+                    opacity: 0.5;
                 }
                 h2, h3 {
                     color: ${color} !important;
