@@ -1918,12 +1918,12 @@
             const weaponName = gameState.config.cards[weaponKcode].name;
             const locationName = gameState.config.cards[locationKcode].name;
             
-            // Phase 1: Opening envelope (3 sec - was 2)
+            // Phase 1: Opening envelope (5 sec - was 3)
             document.getElementById('envelope-status').textContent = 'De envelop wordt geopend...';
             document.getElementById('envelope-title').textContent = '📩 De envelop wordt geopend...';
-            await sleep(3000);
+            await sleep(5000);
             
-            // Phase 2: Show accusation (3 sec - was 2)
+            // Phase 2: Show accusation (3 sec)
             document.getElementById('envelope-title').textContent = '📂 Jouw beschuldiging:';
             document.getElementById('envelope-animation').classList.add('hidden');
             document.getElementById('envelope-solution').classList.remove('hidden');
@@ -1936,15 +1936,44 @@
             
             await sleep(3000);
             
-            // Phase 3: Checking (3 sec - was 2)
+            // Phase 3: Checking INDIVIDUALLY (3x3 sec = 9 sec total)
             document.getElementById('envelope-title').textContent = '🔍 Controleren...';
+            
+            // Check person (3 sec)
+            document.getElementById('envelope-summary').innerHTML = `
+                <div style="font-size: 3em; margin: 20px 0;">🔍</div>
+                <div style="font-size: 1.3em; color: white;">
+                    <strong>👤 ${personName}</strong>
+                </div>
+            `;
             await sleep(3000);
             
-            // Phase 4: Big reveal (3 sec - was 2)
+            // Check weapon (3 sec)
+            document.getElementById('envelope-summary').innerHTML = `
+                <div style="font-size: 3em; margin: 20px 0;">🔍</div>
+                <div style="font-size: 1.3em; color: white;">
+                    <strong>🔪 ${weaponName}</strong>
+                </div>
+            `;
+            await sleep(3000);
+            
+            // Check location (3 sec)
+            document.getElementById('envelope-summary').innerHTML = `
+                <div style="font-size: 3em; margin: 20px 0;">🔍</div>
+                <div style="font-size: 1.3em; color: white;">
+                    <strong>🏠 ${locationName}</strong>
+                </div>
+            `;
+            await sleep(3000);
+            
+            // Phase 4: Big reveal (3 sec)
             const solution = gameState.config.solution;
             const isCorrect = solution.includes(personKcode) && 
                             solution.includes(weaponKcode) && 
                             solution.includes(locationKcode);
+            
+            document.getElementById('envelope-title').textContent = '⚖️ Het oordeel...';
+            document.getElementById('envelope-summary').innerHTML = '';
             
             const resultDiv = document.getElementById('envelope-result');
             resultDiv.classList.remove('hidden');
@@ -1966,7 +1995,7 @@
             
             // Reset envelope modal for next time
             document.getElementById('envelope-animation').classList.remove('hidden');
-            document.getElementById('envelope-solution').classList.add('hidden');
+            document.getElementById('envelope-solution').classList.remove('hidden');
             document.getElementById('envelope-result').classList.add('hidden');
             document.getElementById('envelope-title').textContent = '📩 De envelop wordt geopend...';
             document.getElementById('envelope-status').textContent = 'Even geduld...';
