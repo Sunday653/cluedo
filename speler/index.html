@@ -1900,7 +1900,14 @@
         async function startEnvelopeOpening() {
             // Close double check, open envelope modal
             document.getElementById('double-check-modal').classList.remove('active');
+            
+            // Force reflow to ensure modal is closed before opening new one
+            void document.getElementById('double-check-modal').offsetHeight;
+            
             document.getElementById('envelope-modal').classList.add('active');
+            
+            // Force reflow again
+            void document.getElementById('envelope-modal').offsetHeight;
             
             // Get accusation data
             const personKcode = document.getElementById('accusation-person').value;
@@ -1911,11 +1918,12 @@
             const weaponName = gameState.config.cards[weaponKcode].name;
             const locationName = gameState.config.cards[locationKcode].name;
             
-            // Phase 1: Opening envelope (2 sec)
+            // Phase 1: Opening envelope (3 sec - was 2)
             document.getElementById('envelope-status').textContent = 'De envelop wordt geopend...';
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            document.getElementById('envelope-title').textContent = '📩 De envelop wordt geopend...';
+            await sleep(3000);
             
-            // Phase 2: Show accusation (2 sec)
+            // Phase 2: Show accusation (3 sec - was 2)
             document.getElementById('envelope-title').textContent = '📂 Jouw beschuldiging:';
             document.getElementById('envelope-animation').classList.add('hidden');
             document.getElementById('envelope-solution').classList.remove('hidden');
@@ -1926,13 +1934,13 @@
                 <strong>🏠 ${locationName}</strong>
             `;
             
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await sleep(3000);
             
-            // Phase 3: Checking (2 sec)
+            // Phase 3: Checking (3 sec - was 2)
             document.getElementById('envelope-title').textContent = '🔍 Controleren...';
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await sleep(3000);
             
-            // Phase 4: Big reveal
+            // Phase 4: Big reveal (3 sec - was 2)
             const solution = gameState.config.solution;
             const isCorrect = solution.includes(personKcode) && 
                             solution.includes(weaponKcode) && 
@@ -1942,13 +1950,12 @@
             resultDiv.classList.remove('hidden');
             
             if (isCorrect) {
-                resultDiv.innerHTML = '<div style="color: #4caf50;">✅ JUIST!</div>';
+                resultDiv.innerHTML = '<div style="color: #4caf50; font-size: 2.5em;">✅ JUIST!</div>';
             } else {
-                resultDiv.innerHTML = '<div style="color: #ff6b6b;">❌ ONJUIST!</div>';
+                resultDiv.innerHTML = '<div style="color: #ff6b6b; font-size: 2.5em;">❌ ONJUIST!</div>';
             }
             
-            // Wait 2 sec before continuing
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await sleep(3000);
             
             // Close envelope modal
             document.getElementById('envelope-modal').classList.remove('active');
@@ -1962,6 +1969,7 @@
             document.getElementById('envelope-solution').classList.add('hidden');
             document.getElementById('envelope-result').classList.add('hidden');
             document.getElementById('envelope-title').textContent = '📩 De envelop wordt geopend...';
+            document.getElementById('envelope-status').textContent = 'Even geduld...';
             
             // Store accusation data
             const accusation = {
@@ -1988,6 +1996,11 @@
             } else {
                 handleWrongAccusation(accusation);
             }
+        }
+        
+        // Sleep helper function for better async handling
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
         
         // Check accusation (OLD - not used anymore, kept for backwards compatibility)
