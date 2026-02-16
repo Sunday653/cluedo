@@ -492,11 +492,12 @@
         
         /* Confetti animation */
         .confetti {
-            position: absolute;
+            position: fixed;
             width: 10px;
             height: 10px;
             background: #f39c12;
             animation: confetti-fall 3s linear infinite;
+            z-index: 2001;
         }
         
         @keyframes confetti-fall {
@@ -783,7 +784,30 @@
                 
                 <div class="modal-buttons">
                     <button class="btn btn-secondary btn-small" onclick="closeDoubleCheck()">❌ Nee, toch niet</button>
-                    <button class="btn btn-small" onclick="checkAccusation()">✅ Ja, ik weet het zeker!</button>
+                    <button class="btn btn-small" onclick="startEnvelopeOpening()">✅ Ja, ik weet het zeker!</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Envelope Opening Modal -->
+        <div id="envelope-modal" class="modal">
+            <div class="modal-content" style="text-align: center;">
+                <h3 id="envelope-title">📩 De envelop wordt geopend...</h3>
+                
+                <div id="envelope-animation" style="margin: 30px 0;">
+                    <div style="font-size: 4em; margin-bottom: 20px;">📩</div>
+                    <div style="color: #999; font-size: 1.1em;" id="envelope-status">Even geduld...</div>
+                </div>
+                
+                <div id="envelope-solution" class="hidden" style="margin: 20px 0;">
+                    <div class="info-box">
+                        <p><strong>Jouw beschuldiging:</strong></p>
+                        <div id="envelope-summary" style="margin-top: 10px; font-size: 1.1em;"></div>
+                    </div>
+                </div>
+                
+                <div id="envelope-result" class="hidden" style="margin-top: 30px; font-size: 2em; font-weight: bold;">
+                    <!-- Result appears here -->
                 </div>
             </div>
         </div>
@@ -1190,10 +1214,55 @@
         
         // Perform reset
         function performReset() {
+            // 1. Stop any active scanners
+            if (gameState.scanner) {
+                try {
+                    gameState.scanner.clear();
+                } catch (e) {
+                    console.log('Scanner already cleared');
+                }
+                gameState.scanner = null;
+            }
+            
+            // 2. Stop penalty timer
+            if (penaltyInterval) {
+                clearInterval(penaltyInterval);
+                penaltyInterval = null;
+            }
+            
+            // 3. Close ALL modals
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+            document.getElementById('penalty-overlay').classList.remove('active');
+            document.getElementById('win-overlay').classList.remove('active');
+            
+            // Remove any confetti
+            document.querySelectorAll('.confetti').forEach(c => c.remove());
+            
+            // 4. Show tabs again (in case hidden during accusation)
+            document.getElementById('tabs-row-1').classList.remove('hidden');
+            document.getElementById('tabs-row-2').classList.remove('hidden');
+            
+            // 5. Clear suggestion display
+            document.getElementById('suggestion-person').innerHTML = '<span class="empty">Scan kaart</span>';
+            document.getElementById('suggestion-weapon').innerHTML = '<span class="empty">Scan kaart</span>';
+            document.getElementById('suggestion-location').innerHTML = '<span class="empty">Scan kaart</span>';
+            
+            // 6. Remove team color styling
+            const oldStyle = document.getElementById('team-color-style');
+            if (oldStyle) oldStyle.remove();
+            
+            const h1 = document.querySelector('h1');
+            h1.classList.remove('team-colored');
+            h1.style.removeProperty('--team-color');
+            
+            // 7. Clear localStorage
             for (let i = 1; i <= 6; i++) {
                 localStorage.removeItem(`cluedo_team${i}_state`);
             }
             
+            // 8. Reset gameState
             gameState = {
                 teamNumber: null,
                 teamName: null,
@@ -1222,8 +1291,10 @@
                 }
             };
             
+            // 9. Go to welcome screen
             showScreen('screen-welcome');
-            console.log('App reset completed');
+            
+            console.log('✅ Complete reset successful');
         }
         
         // ========== SUGGESTIE FUNCTIES ==========
@@ -1825,49 +1896,103 @@
             document.getElementById('accusation-modal').classList.add('active');
         }
         
-        // Check accusation
-        function checkAccusation() {
+        // Start envelope opening animation
+        async function startEnvelopeOpening() {
+            // Close double check, open envelope modal
+            document.getElementById('double-check-modal').classList.remove('active');
+            document.getElementById('envelope-modal').classList.add('active');
+            
+            // Get accusation data
             const personKcode = document.getElementById('accusation-person').value;
             const weaponKcode = document.getElementById('accusation-weapon').value;
             const locationKcode = document.getElementById('accusation-location').value;
             
-            const solution = gameState.config.solution;
+            const personName = gameState.config.cards[personKcode].name;
+            const weaponName = gameState.config.cards[weaponKcode].name;
+            const locationName = gameState.config.cards[locationKcode].name;
             
+            // Phase 1: Opening envelope (2 sec)
+            document.getElementById('envelope-status').textContent = 'De envelop wordt geopend...';
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Phase 2: Show accusation (2 sec)
+            document.getElementById('envelope-title').textContent = '📂 Jouw beschuldiging:';
+            document.getElementById('envelope-animation').classList.add('hidden');
+            document.getElementById('envelope-solution').classList.remove('hidden');
+            
+            document.getElementById('envelope-summary').innerHTML = `
+                <strong>👤 ${personName}</strong><br>
+                <strong>🔪 ${weaponName}</strong><br>
+                <strong>🏠 ${locationName}</strong>
+            `;
+            
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Phase 3: Checking (2 sec)
+            document.getElementById('envelope-title').textContent = '🔍 Controleren...';
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Phase 4: Big reveal
+            const solution = gameState.config.solution;
             const isCorrect = solution.includes(personKcode) && 
                             solution.includes(weaponKcode) && 
                             solution.includes(locationKcode);
             
-            // Close all modals
-            document.getElementById('double-check-modal').classList.remove('active');
+            const resultDiv = document.getElementById('envelope-result');
+            resultDiv.classList.remove('hidden');
+            
+            if (isCorrect) {
+                resultDiv.innerHTML = '<div style="color: #4caf50;">✅ JUIST!</div>';
+            } else {
+                resultDiv.innerHTML = '<div style="color: #ff6b6b;">❌ ONJUIST!</div>';
+            }
+            
+            // Wait 2 sec before continuing
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Close envelope modal
+            document.getElementById('envelope-modal').classList.remove('active');
             
             // Show tabs again
             document.getElementById('tabs-row-1').classList.remove('hidden');
             document.getElementById('tabs-row-2').classList.remove('hidden');
             
+            // Reset envelope modal for next time
+            document.getElementById('envelope-animation').classList.remove('hidden');
+            document.getElementById('envelope-solution').classList.add('hidden');
+            document.getElementById('envelope-result').classList.add('hidden');
+            document.getElementById('envelope-title').textContent = '📩 De envelop wordt geopend...';
+            
             // Store accusation data
             const accusation = {
                 person: {
                     kcode: personKcode,
-                    name: gameState.config.cards[personKcode].name,
+                    name: personName,
                     type: 'p'
                 },
                 weapon: {
                     kcode: weaponKcode,
-                    name: gameState.config.cards[weaponKcode].name,
+                    name: weaponName,
                     type: 'w'
                 },
                 location: {
                     kcode: locationKcode,
-                    name: gameState.config.cards[locationKcode].name,
+                    name: locationName,
                     type: 'l'
                 }
             };
             
+            // Show result
             if (isCorrect) {
                 handleCorrectAccusation(accusation);
             } else {
                 handleWrongAccusation(accusation);
             }
+        }
+        
+        // Check accusation (OLD - not used anymore, kept for backwards compatibility)
+        function checkAccusation() {
+            startEnvelopeOpening();
         }
         
         // Handle correct accusation
@@ -1902,16 +2027,15 @@
         
         // Show win screen
         function showWinScreen() {
-            const winContent = document.getElementById('win-content');
-            
-            // Add confetti
+            // Add confetti to body (not win-content)
             for (let i = 0; i < 50; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
                 confetti.style.animationDelay = Math.random() * 3 + 's';
                 confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
-                winContent.appendChild(confetti);
+                document.body.appendChild(confetti);
             }
             
             document.getElementById('win-time').textContent = formatTime(gameState.gameWon.timeElapsed);
@@ -1937,6 +2061,10 @@
         // Close win screen
         function closeWinScreen() {
             document.getElementById('win-overlay').classList.remove('active');
+            
+            // Remove confetti
+            document.querySelectorAll('.confetti').forEach(c => c.remove());
+            
             switchGameTab('history-tab');
             updateButtonStates();
         }
