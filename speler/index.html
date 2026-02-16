@@ -806,7 +806,7 @@
                     </div>
                 </div>
                 
-                <div id="envelope-result" class="hidden" style="margin-top: 30px; font-size: 2em; font-weight: bold;">
+                <div id="envelope-result" class="hidden" style="margin-top: 30px; font-size: 2.5em; font-weight: bold;">
                     <!-- Result appears here -->
                 </div>
             </div>
@@ -1832,7 +1832,7 @@
                 }
             });
             
-            // Set penalty warning
+            // Set penalty warning FIRST
             document.getElementById('penalty-warning').textContent = gameState.config.settings.penaltyMinutes;
             
             // Show modal
@@ -1979,9 +1979,9 @@
             resultDiv.classList.remove('hidden');
             
             if (isCorrect) {
-                resultDiv.innerHTML = '<div style="color: #4caf50; font-size: 2.5em;">✅ JUIST!</div>';
+                resultDiv.innerHTML = '<div style="color: #4caf50;">✅ JUIST!</div>';
             } else {
-                resultDiv.innerHTML = '<div style="color: #ff6b6b; font-size: 2.5em;">❌ ONJUIST!</div>';
+                resultDiv.innerHTML = '<div style="color: #ff6b6b;">❌ ONJUIST!</div>';
             }
             
             await sleep(3000);
