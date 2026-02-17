@@ -536,7 +536,7 @@
 
                 <button id="scan-team-btn" class="btn" onclick="startTeamScan()">🔷 Scan Team QR</button>
                 <button id="scan-config-btn" class="btn" onclick="startConfigScan()" disabled style="opacity: 0.5;">🎲 Scan Config QR</button>
-                <button id="reset-btn" class="btn btn-secondary" onclick="performReset()">🔄 Reset</button>
+                <button id="reset-btn" class="btn btn-secondary" onclick="resetApp()">🔄 Reset</button>
             </div>
         </div>
         
@@ -1350,7 +1350,15 @@
                 }
             };
             
-            // 9. Go to welcome screen
+            // 9. Reset welcome screen buttons
+            document.getElementById('status-icon').textContent = '⏳';
+            document.getElementById('status-text').textContent = 'Wachtend op team scan...';
+            document.getElementById('scan-team-btn').disabled = false;
+            document.getElementById('scan-team-btn').style.opacity = '1';
+            document.getElementById('scan-config-btn').disabled = true;
+            document.getElementById('scan-config-btn').style.opacity = '0.5';
+            
+            // 10. Go to welcome screen
             showScreen('screen-welcome');
             
             console.log('✅ Complete reset successful');
