@@ -514,6 +514,7 @@
     </style>
 </head>
 <body>
+    <div class="container">
         <h1>🕵️ Levend Cluedo</h1>
         
         <!-- Screen 1: Welcome -->
@@ -521,20 +522,13 @@
             <div class="card">
                 <h2>Welkom Detective!</h2>
                 <div class="info-box">
-                    <p>Scan beide QR codes om te starten:</p>
+                    <p><strong>Stap 1:</strong> Scan je Team QR-code<br>
+                    <strong>Stap 2:</strong> Scan de Config QR-code<br>
+                    <strong>Stap 3:</strong> Start met spelen!</p>
                 </div>
-                <button id="btnTeamScan" class="btn" onclick="startTeamScan()" style="margin-bottom:10px;">
-                    <span id="teamStatus">📱</span> Scan Team QR
-                </button>
-                <button id="btnConfigScan" class="btn" onclick="startConfigScan()">
-                    <span id="configStatus">⚙️</span> Scan Config QR
-                </button>
-                <button id="btnStart" class="btn" onclick="finalizeStart()" style="margin-top:20px; display:none; background:#28a745;">
-                    ▶️ Start Spel
-                </button>
+                <button class="btn" onclick="startTeamScan()">🔷 Scan Team QR</button>
             </div>
         </div>
-        
         
         <!-- Screen 2: Team Scan -->
         <div id="screen-team-scan" class="screen">
@@ -566,16 +560,16 @@
             <div class="card">
                 <!-- Tabs - Row 1 -->
                 <div class="tabs" id="tabs-row-1">
-                    <button class="tab" onclick="switchGameTab('my-cards-tab')">ðŸƒ Kaarten</button>
-                    <button class="tab active" onclick="switchGameTab('suggestion-tab')">ðŸ” Suggestie</button>
-                    <button class="tab" onclick="switchGameTab('history-tab')">ðŸ“œ Logboek</button>
+                    <button class="tab" onclick="switchGameTab('my-cards-tab')">🃏 Kaarten</button>
+                    <button class="tab active" onclick="switchGameTab('suggestion-tab')">🔍 Suggestie</button>
+                    <button class="tab" onclick="switchGameTab('history-tab')">📜 Logboek</button>
                 </div>
                 
                 <!-- Tabs - Row 2 -->
                 <div class="tabs" id="tabs-row-2">
-                    <button class="tab" onclick="switchGameTab('accusation-tab')">ðŸ‘©ðŸ»â€âš–ï¸ Beschuldig</button>
-                    <button class="tab" onclick="switchGameTab('info-tab')">â„¹ï¸ Info</button>
-                    <button class="tab" onclick="switchGameTab('reset-tab')">ðŸ”„ Reset</button>
+                    <button class="tab" onclick="switchGameTab('accusation-tab')">👩🏻‍⚖️ Beschuldig</button>
+                    <button class="tab" onclick="switchGameTab('info-tab')">ℹ️ Info</button>
+                    <button class="tab" onclick="switchGameTab('reset-tab')">🔄 Reset</button>
                 </div>
                 
                 <!-- Tab 1: Mijn Kaarten -->
@@ -592,7 +586,7 @@
                     <div class="suggestion-box" style="margin-bottom: 10px;">
                         <div class="suggestion-item">
                             <div>
-                                <div class="label">ðŸ‘¤ Persoon:</div>
+                                <div class="label">👤 Persoon:</div>
                             </div>
                             <div class="value" id="suggestion-person">
                                 <span class="empty">Scan kaart</span>
@@ -600,7 +594,7 @@
                         </div>
                         <div class="suggestion-item">
                             <div>
-                                <div class="label">ðŸ”ª Wapen:</div>
+                                <div class="label">🔪 Wapen:</div>
                             </div>
                             <div class="value" id="suggestion-weapon">
                                 <span class="empty">Scan kaart</span>
@@ -608,7 +602,7 @@
                         </div>
                         <div class="suggestion-item">
                             <div>
-                                <div class="label">ðŸ  Locatie:</div>
+                                <div class="label">🏠 Locatie:</div>
                             </div>
                             <div class="value" id="suggestion-location">
                                 <span class="empty">Scan kaart</span>
@@ -616,8 +610,8 @@
                         </div>
                     </div>
                     
-                    <button class="btn" id="scan-card-btn" onclick="scanCard()">ðŸ”· Scan Kaart</button>
-                    <button class="btn" id="check-suggestion-btn" onclick="checkSuggestion()" disabled>ðŸ” Controleer</button>
+                    <button class="btn" id="scan-card-btn" onclick="scanCard()">🔷 Scan Kaart</button>
+                    <button class="btn" id="check-suggestion-btn" onclick="checkSuggestion()" disabled>🔍 Controleer</button>
                 </div>
                 
                 <!-- Tab 3: Logboek -->
@@ -634,9 +628,9 @@
                 <div id="accusation-tab" class="tab-content">
                     <h2>Beschuldiging</h2>
                     <div class="info-box">
-                        <p>âš ï¸ Let op: Bij een foute beschuldiging krijg je een tijdstraf!</p>
+                        <p>⚠️ Let op: Bij een foute beschuldiging krijg je een tijdstraf!</p>
                     </div>
-                    <button class="btn" id="scan-accusation-btn" onclick="startAccusationScan()">ðŸ‘€ Scan Beschuldigings QR</button>
+                    <button class="btn" id="scan-accusation-btn" onclick="startAccusationScan()">👀 Scan Beschuldigings QR</button>
                 </div>
                 
                 <!-- Tab 5: Informatie -->
@@ -660,10 +654,10 @@
                 <div id="reset-tab" class="tab-content">
                     <h2>Reset App</h2>
                     <div class="info-box">
-                        <p style="color: #ff6b6b;">âš ï¸ <strong>Waarschuwing:</strong><br>
+                        <p style="color: #ff6b6b;">⚠️ <strong>Waarschuwing:</strong><br>
                         Dit verwijdert al je voortgang en geschiedenis. Deze actie kan niet ongedaan worden gemaakt.</p>
                     </div>
-                    <button class="btn btn-secondary" onclick="resetApp()" style="background: #dc3545;">ðŸ”„ Reset App</button>
+                    <button class="btn btn-secondary" onclick="resetApp()" style="background: #dc3545;">🔄 Reset App</button>
                 </div>
             </div>
         </div>
@@ -718,7 +712,7 @@
                     <span id="team-check-message"></span>
                 </div>
                 <div id="qr-reader-team-check" class="hidden"></div>
-                <button class="btn" id="start-team-scan-btn" onclick="startTeamCheckScan()">ðŸ”· Scan Team QR</button>
+                <button class="btn" id="start-team-scan-btn" onclick="startTeamCheckScan()">🔷 Scan Team QR</button>
                 <button class="btn btn-secondary" onclick="closeTeamCheck()">Annuleren</button>
             </div>
         </div>
@@ -726,7 +720,7 @@
         <!-- Checking Teams Modal -->
         <div id="checking-modal" class="modal">
             <div class="modal-content">
-                <h3>ðŸ” Teams Controleren...</h3>
+                <h3>🔍 Teams Controleren...</h3>
                 <div id="checking-list"></div>
             </div>
         </div>
@@ -743,33 +737,33 @@
         <!-- Accusation Modal -->
         <div id="accusation-modal" class="modal">
             <div class="modal-content">
-                <h3>âš–ï¸ BESCHULDIGING</h3>
+                <h3>⚖️ BESCHULDIGING</h3>
                 
                 <div style="margin: 20px 0;">
-                    <label style="display: block; margin-bottom: 5px; color: #999;">ðŸ‘¤ Persoon:</label>
+                    <label style="display: block; margin-bottom: 5px; color: #999;">👤 Persoon:</label>
                     <select id="accusation-person" class="dropdown" onchange="updateAccusationButton()">
                         <option value="">Kies persoon...</option>
                     </select>
                     
-                    <label style="display: block; margin-bottom: 5px; margin-top: 15px; color: #999;">ðŸ”ª Wapen:</label>
+                    <label style="display: block; margin-bottom: 5px; margin-top: 15px; color: #999;">🔪 Wapen:</label>
                     <select id="accusation-weapon" class="dropdown" onchange="updateAccusationButton()">
                         <option value="">Kies wapen...</option>
                     </select>
                     
-                    <label style="display: block; margin-bottom: 5px; margin-top: 15px; color: #999;">ðŸ  Locatie:</label>
+                    <label style="display: block; margin-bottom: 5px; margin-top: 15px; color: #999;">🏠 Locatie:</label>
                     <select id="accusation-location" class="dropdown" onchange="updateAccusationButton()">
                         <option value="">Kies locatie...</option>
                     </select>
                 </div>
                 
                 <div class="info-box" style="background: #3d2817; border-left-color: #ffc107; margin: 20px 0;">
-                    <p style="color: #ffc107;">âš ï¸ <strong>Let op!</strong><br>
+                    <p style="color: #ffc107;">⚠️ <strong>Let op!</strong><br>
                     Fout = <span id="penalty-warning"></span> minuten penalty</p>
                 </div>
                 
                 <div class="modal-buttons">
-                    <button class="btn btn-secondary btn-small" onclick="closeAccusationModal()">âŒ Annuleren</button>
-                    <button class="btn btn-small" id="confirm-accusation-btn" onclick="showDoubleCheck()" disabled>âš–ï¸ Bevestig</button>
+                    <button class="btn btn-secondary btn-small" onclick="closeAccusationModal()">❌ Annuleren</button>
+                    <button class="btn btn-small" id="confirm-accusation-btn" onclick="showDoubleCheck()" disabled>⚖️ Bevestig</button>
                 </div>
             </div>
         </div>
@@ -777,7 +771,7 @@
         <!-- Double Check Modal -->
         <div id="double-check-modal" class="modal">
             <div class="modal-content">
-                <h3>ðŸ¤” Weet je het ZEKER?</h3>
+                <h3>🤔 Weet je het ZEKER?</h3>
                 
                 <div class="info-box" style="margin: 20px 0;">
                     <p><strong>Je beschuldigt:</strong></p>
@@ -785,12 +779,12 @@
                 </div>
                 
                 <div class="info-box" style="background: #3d2817; border-left-color: #ff6b6b;">
-                    <p style="color: #ff6b6b;">âŒ <strong>Fout = Penalty!</strong></p>
+                    <p style="color: #ff6b6b;">❌ <strong>Fout = Penalty!</strong></p>
                 </div>
                 
                 <div class="modal-buttons">
-                    <button class="btn btn-secondary btn-small" onclick="closeDoubleCheck()">âŒ Nee, toch niet</button>
-                    <button class="btn btn-small" onclick="startEnvelopeOpening()">âœ… Ja, ik weet het zeker!</button>
+                    <button class="btn btn-secondary btn-small" onclick="closeDoubleCheck()">❌ Nee, toch niet</button>
+                    <button class="btn btn-small" onclick="startEnvelopeOpening()">✅ Ja, ik weet het zeker!</button>
                 </div>
             </div>
         </div>
@@ -798,10 +792,10 @@
         <!-- Envelope Opening Modal -->
         <div id="envelope-modal" class="modal">
             <div class="modal-content" style="text-align: center;">
-                <h3 id="envelope-title">ðŸ“© De envelop wordt geopend...</h3>
+                <h3 id="envelope-title">📩 De envelop wordt geopend...</h3>
                 
                 <div id="envelope-animation" style="margin: 30px 0;">
-                    <div style="font-size: 4em; margin-bottom: 20px;">ðŸ“©</div>
+                    <div style="font-size: 4em; margin-bottom: 20px;">📩</div>
                     <div style="color: #999; font-size: 1.1em;" id="envelope-status">Even geduld...</div>
                 </div>
                 
@@ -821,7 +815,7 @@
         <!-- Penalty Overlay -->
         <div id="penalty-overlay" class="penalty-overlay">
             <div class="penalty-content">
-                <h2>âŒ ONJUIST!</h2>
+                <h2>❌ ONJUIST!</h2>
                 <div class="penalty-timer" id="penalty-timer">00:00</div>
                 <div class="penalty-message">
                     Je mag over <span id="penalty-seconds">0</span> sec<br>
@@ -833,23 +827,23 @@
         <!-- Penalty End Modal -->
         <div id="penalty-end-modal" class="modal">
             <div class="modal-content">
-                <h3>âŒ Je beschuldiging was onjuist!</h3>
+                <h3>❌ Je beschuldiging was onjuist!</h3>
                 <div class="info-box" style="margin: 20px 0;">
                     <p style="text-align: center;">
                         Ga je huiswerk doen en kom pas terug als je zeker bent dat je alle feiten gevonden hebt!
                     </p>
                 </div>
-                <button class="btn" onclick="closePenaltyEnd()">OkÃ©, verder spelen</button>
+                <button class="btn" onclick="closePenaltyEnd()">Oké, verder spelen</button>
             </div>
         </div>
         
         <!-- Win Overlay -->
         <div id="win-overlay" class="win-overlay">
             <div class="win-content" id="win-content">
-                <h2>ðŸŽ‰ GEWONNEN! ðŸŽ‰</h2>
+                <h2>🎉 GEWONNEN! 🎉</h2>
                 <div class="win-stats">
-                    <div>â±ï¸ Tijd: <span id="win-time">00:00</span></div>
-                    <div>ðŸ“ Suggesties: <span id="win-suggestions">0</span></div>
+                    <div>⏱️ Tijd: <span id="win-time">00:00</span></div>
+                    <div>📝 Suggesties: <span id="win-suggestions">0</span></div>
                 </div>
                 <button class="btn" id="win-continue-btn" onclick="closeWinScreen()" disabled>
                     Klik hier om door te gaan
@@ -891,9 +885,7 @@
                 timeElapsed: null,
                 suggestionsCount: null,
                 solution: null
-            },
-            teamScanned: false,
-            configScanned: false,
+            }
         };
         
         let penaltyInterval = null;
@@ -988,7 +980,7 @@
         // Show error
         function showError(message) {
             const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = 'âŒ ' + message;
+            errorDiv.textContent = '❌ ' + message;
             errorDiv.classList.remove('hidden');
             setTimeout(() => errorDiv.classList.add('hidden'), 5000);
         }
@@ -1026,20 +1018,20 @@
                 gameState.teamNumber = teamData.teamNumber;
                 gameState.teamName = teamData.teamName;
                 gameState.teamColor = teamData.teamColor;
-                gameState.teamScanned = true;
                 
                 gameState.scanner.clear();
                 gameState.scanner = null;
                 
-                // Update UI - toon vinkje
-                document.getElementById('teamStatus').textContent = '✅';
-                document.getElementById('btnTeamScan').disabled = true;
-                document.getElementById('btnTeamScan').style.opacity = '0.6';
+                const badge = document.getElementById('team-badge');
+                badge.innerHTML = `
+                    <div class="success" style="margin-bottom: 15px;">
+                        ✅ <strong>Team succesvol gescand!</strong><br>
+                        Je bent: ${teamData.teamName} (${teamData.teamColor})
+                    </div>
+                `;
                 
-                showScreen('screen-welcome');
-                
-                // Check if both scanned
-                checkSetupComplete();
+                showScreen('screen-config-scan');
+                startConfigScan();
                 
             } catch (err) {
                 console.error('Error parsing team QR:', err);
@@ -1047,14 +1039,187 @@
             }
         }
         
-        // Perform complete reset
+        // Start Config scan
+        function startConfigScan() {
+            gameState.scanner = new Html5QrcodeScanner(
+                "qr-reader-config",
+                { 
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0
+                }
+            );
+            
+            gameState.scanner.render(onConfigQRScanned, onScanError);
+        }
+        
+        // Config QR scanned
+        function onConfigQRScanned(decodedText) {
+            console.log('Config QR scanned');
+            
+            try {
+                const qrData = JSON.parse(decodedText);
+                const decompressed = LZString.decompressFromBase64(qrData.data);
+                const configData = JSON.parse(decompressed);
+                
+                if (configData.type !== 'config') {
+                    showError('Dit is geen Config QR-code!');
+                    return;
+                }
+                
+                gameState.config = configData;
+                gameState.gameStartTime = Date.now(); // Start timer
+                
+                const myCardKCodes = configData.distribution[`team${gameState.teamNumber}`];
+                gameState.myCards = myCardKCodes.map(kcode => {
+                    const cardInfo = configData.cards[kcode];
+                    return {
+                        kcode: kcode,
+                        name: cardInfo.name,
+                        type: cardInfo.type
+                    };
+                });
+                
+                gameState.scanner.clear();
+                gameState.scanner = null;
+                
+                saveGameState();
+                showScreen('screen-playing');
+                
+                switchGameTab('my-cards-tab');
+                
+                displayTeamInfo();
+                displayMyCards();
+                
+            } catch (err) {
+                console.error('Error parsing config QR:', err);
+                showError('Ongeldige Config QR-code: ' + err.message);
+            }
+        }
+        
+        // Scan error (ignore most)
+        function onScanError(errorMessage) {
+            if (!errorMessage.includes('No MultiFormat Readers')) {
+                console.log('Scan error:', errorMessage);
+            }
+        }
+        
+        // Cancel scan
+        function cancelScan() {
+            if (gameState.scanner) {
+                gameState.scanner.clear();
+                gameState.scanner = null;
+            }
+            showScreen('screen-welcome');
+        }
+        
+        // Back to welcome
+        function backToWelcome() {
+            if (gameState.scanner) {
+                gameState.scanner.clear();
+                gameState.scanner = null;
+            }
+            gameState.teamNumber = null;
+            gameState.teamName = null;
+            gameState.teamColor = null;
+            showScreen('screen-welcome');
+        }
+        
+        // Display team info
+        function displayTeamInfo() {
+            const teamText = `Kaarten van Team ${gameState.teamColor}`;
+            document.getElementById('team-badge-cards').textContent = teamText;
+            
+            const colorMap = {
+                'Rood': '#dc3545',
+                'Blauw': '#007bff',
+                'Groen': '#28a745',
+                'Geel': '#ffc107',
+                'Paars': '#6f42c1',
+                'Oranje': '#fd7e14'
+            };
+            const color = colorMap[gameState.teamColor] || '#667eea';
+            
+            const h1 = document.querySelector('h1');
+            h1.style.setProperty('--team-color', color);
+            h1.classList.add('team-colored');
+            
+            const style = document.createElement('style');
+            style.id = 'team-color-style';
+            const oldStyle = document.getElementById('team-color-style');
+            if (oldStyle) oldStyle.remove();
+            
+            style.textContent = `
+                .tab.active {
+                    background: ${color} !important;
+                }
+                .btn:not(.btn-secondary) {
+                    background: ${color} !important;
+                }
+                .btn:not(.btn-secondary):disabled {
+                    background: ${color} !important;
+                    opacity: 0.5;
+                }
+                h2, h3 {
+                    color: ${color} !important;
+                }
+                .info-box {
+                    border-left-color: ${color} !important;
+                }
+                .team-badge {
+                    background: ${color} !important;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            const rotationDiv = document.getElementById('rotation-info');
+            const checkOrder = getCheckOrder();
+            const teamNames = checkOrder.map(num => `Team ${num}`);
+            rotationDiv.innerHTML = `<strong>Controle volgorde:</strong><br>${teamNames.join(' → ')}`;
+        }
+        
+        // Get check order for this team
+        function getCheckOrder() {
+            const numTeams = Object.keys(gameState.config.distribution).length;
+            const teams = [];
+            for (let i = 1; i <= numTeams; i++) {
+                teams.push(i);
+            }
+            
+            const myIndex = teams.indexOf(gameState.teamNumber);
+            return [...teams.slice(myIndex + 1), ...teams.slice(0, myIndex)];
+        }
+        
+        // Display my cards
+        function displayMyCards() {
+            const container = document.getElementById('my-cards');
+            container.innerHTML = '';
+            
+            gameState.myCards.forEach(card => {
+                const icon = card.type === 'p' ? '👤' : card.type === 'w' ? '🔪' : '🏠';
+                const div = document.createElement('div');
+                div.style.cssText = 'background: #0f3460; padding: 10px; border-radius: 6px; margin: 5px 0;';
+                div.textContent = `${icon} ${card.name}`;
+                container.appendChild(div);
+            });
+        }
+        
+        // Reset app
+        function resetApp() {
+            if (!confirm('Weet je zeker dat je de app wilt resetten? Al je voortgang gaat verloren!')) {
+                return;
+            }
+            performReset();
+        }
+        
+        // Perform reset
         function performReset() {
-            // 1. Stop scanner if active
+            // 1. Stop any active scanners
             if (gameState.scanner) {
                 try {
                     gameState.scanner.clear();
                 } catch (e) {
-                    console.log('Error clearing scanner:', e);
+                    console.log('Scanner already cleared');
                 }
                 gameState.scanner = null;
             }
@@ -1123,22 +1288,11 @@
                     timeElapsed: null,
                     suggestionsCount: null,
                     solution: null
-                },
-                teamScanned: false,
-                configScanned: false
+                }
             };
             
             // 9. Go to welcome screen
             showScreen('screen-welcome');
-            
-            // 10. Reset scan button states
-            document.getElementById('teamStatus').textContent = '📱';
-            document.getElementById('configStatus').textContent = '⚙️';
-            document.getElementById('btnTeamScan').disabled = false;
-            document.getElementById('btnConfigScan').disabled = false;
-            document.getElementById('btnTeamScan').style.opacity = '1';
-            document.getElementById('btnConfigScan').style.opacity = '1';
-            document.getElementById('btnStart').style.display = 'none';
             
             console.log('✅ Complete reset successful');
         }
@@ -1193,18 +1347,18 @@
                     let html = `
                         <div style="font-weight: 600; color: #667eea; margin-bottom: 10px;">${time} - SUGGESTIE</div>
                         <div style="font-size: 0.9em; margin-bottom: 8px;">
-                            ðŸ‘¤ ${entry.suggestion.person.name}<br>
-                            ðŸ”ª ${entry.suggestion.weapon.name}<br>
-                            ðŸ  ${entry.suggestion.location.name}
+                            👤 ${entry.suggestion.person.name}<br>
+                            🔪 ${entry.suggestion.weapon.name}<br>
+                            🏠 ${entry.suggestion.location.name}
                         </div>
                     `;
                     
                     if (entry.result.noMatch) {
-                        html += `<div style="color: #4caf50; font-weight: 600;">ðŸŽ¯ Geen team had deze kaarten!</div>`;
+                        html += `<div style="color: #4caf50; font-weight: 600;">🎯 Geen team had deze kaarten!</div>`;
                     } else {
-                        html += `<div style="color: #999;">â†’ Team ${entry.result.team} toonde:</div>`;
+                        html += `<div style="color: #999;">→ Team ${entry.result.team} toonde:</div>`;
                         entry.result.cards.forEach(card => {
-                            const icon = card.type === 'p' ? 'ðŸ‘¤' : card.type === 'w' ? 'ðŸ”ª' : 'ðŸ ';
+                            const icon = card.type === 'p' ? '👤' : card.type === 'w' ? '🔪' : '🏠';
                             html += `<div style="margin-left: 15px; color: white;">${icon} ${card.name}</div>`;
                         });
                     }
@@ -1214,18 +1368,18 @@
                     let html = `
                         <div style="font-weight: 600; color: #667eea; margin-bottom: 10px;">${time} - BESCHULDIGING</div>
                         <div style="font-size: 0.9em; margin-bottom: 8px;">
-                            ðŸ‘¤ ${entry.accusation.person.name}<br>
-                            ðŸ”ª ${entry.accusation.weapon.name}<br>
-                            ðŸ  ${entry.accusation.location.name}
+                            👤 ${entry.accusation.person.name}<br>
+                            🔪 ${entry.accusation.weapon.name}<br>
+                            🏠 ${entry.accusation.location.name}
                         </div>
                     `;
                     
                     if (entry.result.correct) {
-                        html += `<div style="color: #4caf50; font-weight: 600;">ðŸ† GEWONNEN!</div>`;
-                        html += `<div style="color: #999; margin-top: 5px;">â±ï¸ Tijd: ${formatTime(entry.result.timeElapsed)}</div>`;
-                        html += `<div style="color: #999;">ðŸ“ Suggesties: ${entry.result.suggestionsCount}</div>`;
+                        html += `<div style="color: #4caf50; font-weight: 600;">🏆 GEWONNEN!</div>`;
+                        html += `<div style="color: #999; margin-top: 5px;">⏱️ Tijd: ${formatTime(entry.result.timeElapsed)}</div>`;
+                        html += `<div style="color: #999;">📝 Suggesties: ${entry.result.suggestionsCount}</div>`;
                     } else {
-                        html += `<div style="color: #ff6b6b; font-weight: 600;">âŒ ONJUIST - Penalty ontvangen</div>`;
+                        html += `<div style="color: #ff6b6b; font-weight: 600;">❌ ONJUIST - Penalty ontvangen</div>`;
                     }
                     
                     div.innerHTML = html;
@@ -1295,7 +1449,7 @@
         function showCardConfirm() {
             const card = scannedCardData;
             const typeNames = { p: 'Persoon', w: 'Wapen', l: 'Locatie' };
-            const icons = { p: 'ðŸ‘¤', w: 'ðŸ”ª', l: 'ðŸ ' };
+            const icons = { p: '👤', w: '🔪', l: '🏠' };
             
             document.getElementById('confirm-card-icon').textContent = icons[card.type];
             document.getElementById('confirm-card-name').textContent = card.name;
@@ -1314,7 +1468,7 @@
             }
             
             if (isOwnCard) {
-                message += '<br><br>âš ï¸ <strong>Dit is een van jullie eigen kaarten!</strong>';
+                message += '<br><br>⚠️ <strong>Dit is een van jullie eigen kaarten!</strong>';
             }
             
             document.getElementById('confirm-message').innerHTML = message;
@@ -1406,14 +1560,14 @@
                 
                 const statusDiv = item.querySelector('.status');
                 if (hasCard) {
-                    statusDiv.innerHTML = '<span class="check-result has-card">âœ… Heeft een kaart!</span>';
+                    statusDiv.innerHTML = '<span class="check-result has-card">✅ Heeft een kaart!</span>';
                     matchFound = true;
                     matchTeam = teamNum;
                     
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     break;
                 } else {
-                    statusDiv.innerHTML = '<span class="check-result no-card">âŒ Geen kaarten</span>';
+                    statusDiv.innerHTML = '<span class="check-result no-card">❌ Geen kaarten</span>';
                 }
                 
                 await new Promise(resolve => setTimeout(resolve, 800));
@@ -1435,7 +1589,7 @@
             } else {
                 checkingList.innerHTML += `
                     <div class="success" style="margin-top: 20px; text-align: center;">
-                        <strong>ðŸŽ¯ Geen van de teams heeft deze kaarten!</strong><br>
+                        <strong>🎯 Geen van de teams heeft deze kaarten!</strong><br>
                         <span style="font-size: 0.9em;">Heb je de juiste oplossing gevonden?</span>
                     </div>
                 `;
@@ -1510,9 +1664,9 @@
         function showSuggestionResult(matchTeam) {
             const suggestion = gameState.currentSuggestion;
             
-            document.getElementById('result-person').textContent = `ðŸ‘¤ ${suggestion.person.name}`;
-            document.getElementById('result-weapon').textContent = `ðŸ”ª ${suggestion.weapon.name}`;
-            document.getElementById('result-location').textContent = `ðŸ  ${suggestion.location.name}`;
+            document.getElementById('result-person').textContent = `👤 ${suggestion.person.name}`;
+            document.getElementById('result-weapon').textContent = `🔪 ${suggestion.weapon.name}`;
+            document.getElementById('result-location').textContent = `🏠 ${suggestion.location.name}`;
             
             const resultMsg = document.getElementById('result-message');
             
@@ -1533,10 +1687,10 @@
                 const maxShow = gameState.config.settings.maxCardsToShow;
                 const cardsToShow = matches.slice(0, maxShow);
                 
-                let html = `<div class="success">âœ… Team ${matchTeam} toont:</div>`;
+                let html = `<div class="success">✅ Team ${matchTeam} toont:</div>`;
                 html += '<div style="margin: 15px 0;">';
                 cardsToShow.forEach(card => {
-                    const icon = card.type === 'p' ? 'ðŸ‘¤' : card.type === 'w' ? 'ðŸ”ª' : 'ðŸ ';
+                    const icon = card.type === 'p' ? '👤' : card.type === 'w' ? '🔪' : '🏠';
                     html += `<div style="background: #0f3460; padding: 10px; border-radius: 6px; margin: 5px 0;">${icon} ${card.name}</div>`;
                 });
                 html += '</div>';
@@ -1562,7 +1716,7 @@
             } else {
                 resultMsg.innerHTML = `
                     <div class="info-box" style="background: #2e7d32; border-left-color: #4caf50;">
-                        ðŸŽ¯ <strong>Geen team heeft deze kaarten!</strong><br>
+                        🎯 <strong>Geen team heeft deze kaarten!</strong><br>
                         Dit zijn mogelijk oplossingskaarten!
                     </div>
                 `;
@@ -1727,9 +1881,9 @@
             
             const summary = document.getElementById('double-check-summary');
             summary.innerHTML = `
-                <strong>ðŸ‘¤ ${personName}</strong><br>
-                <strong>ðŸ”ª ${weaponName}</strong><br>
-                <strong>ðŸ  ${locationName}</strong>
+                <strong>👤 ${personName}</strong><br>
+                <strong>🔪 ${weaponName}</strong><br>
+                <strong>🏠 ${locationName}</strong>
             `;
             
             document.getElementById('accusation-modal').classList.remove('active');
@@ -1766,48 +1920,48 @@
             
             // Phase 1: Opening envelope (5 sec - was 3)
             document.getElementById('envelope-status').textContent = 'De envelop wordt geopend...';
-            document.getElementById('envelope-title').textContent = 'ðŸ“© De envelop wordt geopend...';
+            document.getElementById('envelope-title').textContent = '📩 De envelop wordt geopend...';
             await sleep(5000);
             
             // Phase 2: Show accusation (3 sec)
-            document.getElementById('envelope-title').textContent = 'ðŸ“‚ Jouw beschuldiging:';
+            document.getElementById('envelope-title').textContent = '📂 Jouw beschuldiging:';
             document.getElementById('envelope-animation').classList.add('hidden');
             document.getElementById('envelope-solution').classList.remove('hidden');
             
             document.getElementById('envelope-summary').innerHTML = `
-                <strong>ðŸ‘¤ ${personName}</strong><br>
-                <strong>ðŸ”ª ${weaponName}</strong><br>
-                <strong>ðŸ  ${locationName}</strong>
+                <strong>👤 ${personName}</strong><br>
+                <strong>🔪 ${weaponName}</strong><br>
+                <strong>🏠 ${locationName}</strong>
             `;
             
             await sleep(3000);
             
             // Phase 3: Checking INDIVIDUALLY (3x3 sec = 9 sec total)
-            document.getElementById('envelope-title').textContent = 'ðŸ” Controleren...';
+            document.getElementById('envelope-title').textContent = '🔍 Controleren...';
             
             // Check person (3 sec)
             document.getElementById('envelope-summary').innerHTML = `
-                <div style="font-size: 3em; margin: 20px 0;">ðŸ”</div>
+                <div style="font-size: 3em; margin: 20px 0;">🔍</div>
                 <div style="font-size: 1.3em; color: white;">
-                    <strong>ðŸ‘¤ ${personName}</strong>
+                    <strong>👤 ${personName}</strong>
                 </div>
             `;
             await sleep(3000);
             
             // Check weapon (3 sec)
             document.getElementById('envelope-summary').innerHTML = `
-                <div style="font-size: 3em; margin: 20px 0;">ðŸ”</div>
+                <div style="font-size: 3em; margin: 20px 0;">🔍</div>
                 <div style="font-size: 1.3em; color: white;">
-                    <strong>ðŸ”ª ${weaponName}</strong>
+                    <strong>🔪 ${weaponName}</strong>
                 </div>
             `;
             await sleep(3000);
             
             // Check location (3 sec)
             document.getElementById('envelope-summary').innerHTML = `
-                <div style="font-size: 3em; margin: 20px 0;">ðŸ”</div>
+                <div style="font-size: 3em; margin: 20px 0;">🔍</div>
                 <div style="font-size: 1.3em; color: white;">
-                    <strong>ðŸ  ${locationName}</strong>
+                    <strong>🏠 ${locationName}</strong>
                 </div>
             `;
             await sleep(3000);
@@ -1818,16 +1972,16 @@
                             solution.includes(weaponKcode) && 
                             solution.includes(locationKcode);
             
-            document.getElementById('envelope-title').textContent = 'âš–ï¸ Het oordeel...';
+            document.getElementById('envelope-title').textContent = '⚖️ Het oordeel...';
             document.getElementById('envelope-summary').innerHTML = '';
             
             const resultDiv = document.getElementById('envelope-result');
             resultDiv.classList.remove('hidden');
             
             if (isCorrect) {
-                resultDiv.innerHTML = '<div style="color: #4caf50;">âœ… JUIST!</div>';
+                resultDiv.innerHTML = '<div style="color: #4caf50;">✅ JUIST!</div>';
             } else {
-                resultDiv.innerHTML = '<div style="color: #ff6b6b;">âŒ ONJUIST!</div>';
+                resultDiv.innerHTML = '<div style="color: #ff6b6b;">❌ ONJUIST!</div>';
             }
             
             await sleep(3000);
@@ -1843,7 +1997,7 @@
             document.getElementById('envelope-animation').classList.remove('hidden');
             document.getElementById('envelope-solution').classList.remove('hidden');
             document.getElementById('envelope-result').classList.add('hidden');
-            document.getElementById('envelope-title').textContent = 'ðŸ“© De envelop wordt geopend...';
+            document.getElementById('envelope-title').textContent = '📩 De envelop wordt geopend...';
             document.getElementById('envelope-status').textContent = 'Even geduld...';
             
             // Store accusation data
@@ -2040,39 +2194,6 @@
                 
                 // Scan card button stays enabled
             }
-        }
-        
-        // NEW SETUP FLOW FUNCTIONS
-        
-        // Check if both scans are complete
-        function checkSetupComplete() {
-            if (gameState.teamScanned && gameState.configScanned) {
-                // Both scanned - show start button!
-                document.getElementById('btnStart').style.display = 'block';
-            }
-        }
-        
-        // Cancel scan and return to welcome
-        function cancelScan() {
-            if (gameState.scanner) {
-                try {
-                    gameState.scanner.clear();
-                } catch (e) {
-                    console.log('Error clearing scanner:', e);
-                }
-                gameState.scanner = null;
-            }
-            showScreen('screen-welcome');
-        }
-        
-        // Back to welcome (alias for consistency)
-        function backToWelcome() {
-            cancelScan();
-        }
-        
-        // Start game button handler
-        function finalizeStart() {
-            startGame();
         }
     </script>
 </body>
