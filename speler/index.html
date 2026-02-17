@@ -536,6 +536,7 @@
 
                 <button id="scan-team-btn" class="btn" onclick="startTeamScan()">🔷 Scan Team QR</button>
                 <button id="scan-config-btn" class="btn" onclick="startConfigScan()" disabled style="opacity: 0.5;">🎲 Scan Config QR</button>
+                <button id="reset-btn" class="btn btn-secondary" onclick="performReset()">🔄 Reset</button>
             </div>
         </div>
         
@@ -1036,7 +1037,10 @@
                 document.getElementById('status-icon').textContent = '✅';
                 document.getElementById('status-text').innerHTML = `<strong>Team gescand!</strong> ${teamData.teamName} (${teamData.teamColor})`;
                 
-                // Activeer config button
+                // Disable team button, activeer config button
+                document.getElementById('scan-team-btn').disabled = true;
+                document.getElementById('scan-team-btn').style.opacity = '0.5';
+                
                 const configBtn = document.getElementById('scan-config-btn');
                 configBtn.disabled = false;
                 configBtn.style.opacity = '1';
@@ -1145,10 +1149,13 @@
                 document.getElementById('status-icon').textContent = '⏳';
                 document.getElementById('status-text').textContent = 'Wachtend op team scan...';
                 document.getElementById('scan-team-btn').disabled = false;
+                document.getElementById('scan-team-btn').style.opacity = '1';
             } else {
                 // Team al gescand, houd status
                 document.getElementById('status-icon').textContent = '✅';
                 document.getElementById('status-text').innerHTML = `<strong>Team gescand!</strong> ${gameState.teamName} (${gameState.teamColor})`;
+                document.getElementById('scan-team-btn').disabled = true;
+                document.getElementById('scan-team-btn').style.opacity = '0.5';
                 document.getElementById('scan-config-btn').disabled = false;
                 document.getElementById('scan-config-btn').style.opacity = '1';
             }
@@ -1166,10 +1173,11 @@
             gameState.teamName = null;
             gameState.teamColor = null;
             
-            // Reset status
+            // Reset status en knoppen
             document.getElementById('status-icon').textContent = '⏳';
             document.getElementById('status-text').textContent = 'Wachtend op team scan...';
             document.getElementById('scan-team-btn').disabled = false;
+            document.getElementById('scan-team-btn').style.opacity = '1';
             document.getElementById('scan-config-btn').disabled = true;
             document.getElementById('scan-config-btn').style.opacity = '0.5';
             
