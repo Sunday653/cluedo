@@ -511,20 +511,6 @@
         .confetti:nth-child(3n) { background: #3498db; animation-delay: 0.4s; }
         .confetti:nth-child(4n) { background: #2ecc71; animation-delay: 0.6s; }
         .confetti:nth-child(5n) { background: #9b59b6; animation-delay: 0.8s; }
-        
-        /* Loading dots animation */
-        .loading-dots::after {
-            content: '...';
-            display: inline-block;
-            animation: dots 1.5s steps(4, end) infinite;
-        }
-        
-        @keyframes dots {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
-        }
     </style>
 </head>
 <body>
@@ -803,7 +789,7 @@
                 </div>
                 
                 <div class="info-box" style="background: #3d2817; border-left-color: #ff6b6b;">
-                    <p style="color: #ff6b6b;" id="double-check-penalty-text">❌ <strong>Fout = Penalty!</strong></p>
+                    <p style="color: #ff6b6b;">❌ <strong>Fout = Penalty!</strong></p>
                 </div>
                 
                 <div class="modal-buttons">
@@ -816,16 +802,16 @@
         <!-- Envelope Opening Modal -->
         <div id="envelope-modal" class="modal">
             <div class="modal-content" style="text-align: center;">
-                <h3 id="envelope-title">De envelop wordt geopend...</h3>
-                <p style="color: #999; margin-top: 10px; font-size: 0.9em;">De oplossing uit de envelop wordt vergeleken met jullie antwoord.</p>
+                <h3 id="envelope-title">📩 De envelop wordt geopend...</h3>
                 
                 <div id="envelope-animation" style="margin: 30px 0;">
-                    <div style="font-size: 4em; margin-bottom: 20px;">✉️</div>
+                    <div style="font-size: 4em; margin-bottom: 20px;">📩</div>
                     <div style="color: #999; font-size: 1.1em;" id="envelope-status">Even geduld...</div>
                 </div>
                 
                 <div id="envelope-solution" class="hidden" style="margin: 20px 0;">
                     <div class="info-box">
+                        <p><strong>Jouw beschuldiging:</strong></p>
                         <div id="envelope-summary" style="margin-top: 10px; font-size: 1.1em;"></div>
                     </div>
                 </div>
@@ -1967,15 +1953,6 @@
                 <strong>🏠 ${locationName}</strong>
             `;
             
-            // Update penalty text met enkelvoud/meervoud
-            const penaltyMinutes = gameState.config.settings.penaltyMinutes;
-            const penaltyText = document.getElementById('double-check-penalty-text');
-            if (penaltyMinutes === 1) {
-                penaltyText.innerHTML = '❌ <strong>Fout = Penalty van 1 minuut!</strong>';
-            } else {
-                penaltyText.innerHTML = `❌ <strong>Fout = Penalty van ${penaltyMinutes} minuten!</strong>`;
-            }
-            
             document.getElementById('accusation-modal').classList.remove('active');
             document.getElementById('double-check-modal').classList.add('active');
         }
@@ -2008,87 +1985,71 @@
             const weaponName = gameState.config.cards[weaponKcode].name;
             const locationName = gameState.config.cards[locationKcode].name;
             
-            // Hide tabs during accusation
-            document.getElementById('tabs-row-1').classList.add('hidden');
-            document.getElementById('tabs-row-2').classList.add('hidden');
-            
-            // Phase 1: Opening envelope (3 sec)
+            // Phase 1: Opening envelope (5 sec - was 3)
             document.getElementById('envelope-status').textContent = 'De envelop wordt geopend...';
-            document.getElementById('envelope-title').textContent = 'De envelop wordt geopend...';
-            await sleep(3000);
+            document.getElementById('envelope-title').textContent = '📩 De envelop wordt geopend...';
+            await sleep(5000);
             
-            // Phase 2: Skip "Jouw beschuldiging" - ga direct naar controleren
-            document.getElementById('envelope-title').textContent = 'Controleren...';
+            // Phase 2: Show accusation (3 sec)
+            document.getElementById('envelope-title').textContent = '📂 Jouw beschuldiging:';
             document.getElementById('envelope-animation').classList.add('hidden');
             document.getElementById('envelope-solution').classList.remove('hidden');
             
-            await sleep(500);
-            
-            // Phase 3: Check INDIVIDUALLY met animatie (3x3 sec = 9 sec total)
-            
-            // Check person (3 sec met loading dots)
             document.getElementById('envelope-summary').innerHTML = `
-                <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">👤 PERSOON</div>
-                <div style="font-size: 1.8em; color: white; margin: 20px 0;">
-                    <strong>${personName}</strong><span class="loading-dots"></span>
+                <strong>👤 ${personName}</strong><br>
+                <strong>🔪 ${weaponName}</strong><br>
+                <strong>🏠 ${locationName}</strong>
+            `;
+            
+            await sleep(3000);
+            
+            // Phase 3: Checking INDIVIDUALLY (3x3 sec = 9 sec total)
+            document.getElementById('envelope-title').textContent = '🔍 Controleren...';
+            
+            // Check person (3 sec)
+            document.getElementById('envelope-summary').innerHTML = `
+                <div style="font-size: 3em; margin: 20px 0;">🔍</div>
+                <div style="font-size: 1.3em; color: white;">
+                    <strong>👤 ${personName}</strong>
                 </div>
             `;
             await sleep(3000);
             
-            // Check weapon (3 sec met loading dots)
+            // Check weapon (3 sec)
             document.getElementById('envelope-summary').innerHTML = `
-                <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">🔪 WAPEN</div>
-                <div style="font-size: 1.8em; color: white; margin: 20px 0;">
-                    <strong>${weaponName}</strong><span class="loading-dots"></span>
+                <div style="font-size: 3em; margin: 20px 0;">🔍</div>
+                <div style="font-size: 1.3em; color: white;">
+                    <strong>🔪 ${weaponName}</strong>
                 </div>
             `;
             await sleep(3000);
             
-            // Check location (3 sec met loading dots)
+            // Check location (3 sec)
             document.getElementById('envelope-summary').innerHTML = `
-                <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">🏠 LOCATIE</div>
-                <div style="font-size: 1.8em; color: white; margin: 20px 0;">
-                    <strong>${locationName}</strong><span class="loading-dots"></span>
+                <div style="font-size: 3em; margin: 20px 0;">🔍</div>
+                <div style="font-size: 1.3em; color: white;">
+                    <strong>🏠 ${locationName}</strong>
                 </div>
             `;
             await sleep(3000);
             
-            // Phase 4: Dramatic reveal met heartbeat effect
+            // Phase 4: Big reveal (3 sec)
             const solution = gameState.config.solution;
             const isCorrect = solution.includes(personKcode) && 
                             solution.includes(weaponKcode) && 
                             solution.includes(locationKcode);
             
             document.getElementById('envelope-title').textContent = '⚖️ Het oordeel...';
-            document.getElementById('envelope-summary').innerHTML = '<div style="font-size: 2em; margin: 40px 0;">⏳</div>';
-            
-            await sleep(2000);
-            
-            // Clear summary
             document.getElementById('envelope-summary').innerHTML = '';
             
             const resultDiv = document.getElementById('envelope-result');
             resultDiv.classList.remove('hidden');
             
-            // Set initial state - invisible and small
-            resultDiv.style.opacity = '0';
-            resultDiv.style.transform = 'scale(0)';
-            resultDiv.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-            
             if (isCorrect) {
-                resultDiv.innerHTML = '<div style="color: #4caf50; font-size: 2.5em; font-weight: bold;">✅ JUIST!</div>';
+                resultDiv.innerHTML = '<div style="color: #4caf50;">✅ JUIST!</div>';
             } else {
-                resultDiv.innerHTML = '<div style="color: #ff6b6b; font-size: 2.5em; font-weight: bold;">❌ ONJUIST!</div>';
+                resultDiv.innerHTML = '<div style="color: #ff6b6b;">❌ ONJUIST!</div>';
             }
-            
-            // Force reflow
-            void resultDiv.offsetHeight;
-            
-            // Bounce in effect
-            setTimeout(() => {
-                resultDiv.style.opacity = '1';
-                resultDiv.style.transform = 'scale(1)';
-            }, 100);
             
             await sleep(3000);
             
@@ -2103,7 +2064,7 @@
             document.getElementById('envelope-animation').classList.remove('hidden');
             document.getElementById('envelope-solution').classList.remove('hidden');
             document.getElementById('envelope-result').classList.add('hidden');
-            document.getElementById('envelope-title').textContent = 'De envelop wordt geopend...';
+            document.getElementById('envelope-title').textContent = '📩 De envelop wordt geopend...';
             document.getElementById('envelope-status').textContent = 'Even geduld...';
             
             // Store accusation data
