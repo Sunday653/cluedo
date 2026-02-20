@@ -512,29 +512,37 @@
         .confetti:nth-child(4n) { background: #2ecc71; animation-delay: 0.6s; }
         .confetti:nth-child(5n) { background: #9b59b6; animation-delay: 0.8s; }
         
-        /* Loading dots animation - sequential appearance */
+        /* Loading dots animation - color changing */
         .loading-dots {
-            display: inline-block;
-            width: 30px;
-            text-align: left;
-            margin-left: 5px;
-            vertical-align: baseline;
-            line-height: 1;
+            display: inline-flex;
+            gap: 8px;
+            margin-left: 10px;
         }
         
-        .loading-dots::after {
-            content: '...';
-            display: inline-block;
-            width: 30px;
-            animation: dotsSequential 5s linear infinite;
-            letter-spacing: 2px;
+        .loading-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #0f3460;
+            animation: dotPulse 5s ease-in-out infinite;
         }
         
-        @keyframes dotsSequential {
-            0% { content: ''; }
-            10% { content: '.'; }
-            20% { content: '..'; }
-            30%, 100% { content: '...'; }
+        .loading-dots span:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .loading-dots span:nth-child(2) {
+            animation-delay: 1.66s;
+        }
+        
+        .loading-dots span:nth-child(3) {
+            animation-delay: 3.33s;
+        }
+        
+        @keyframes dotPulse {
+            0%, 33% { background: #0f3460; }
+            34%, 66% { background: white; }
+            67%, 100% { background: #0f3460; }
         }
     </style>
 </head>
@@ -2023,6 +2031,7 @@
             document.getElementById('tabs-row-2').classList.add('hidden');
             
             // Phase 1: Opening envelope (3 sec)
+            document.getElementById('envelope-status').textContent = 'De envelop wordt geopend...';
             document.getElementById('envelope-title').textContent = 'De envelop wordt geopend...';
             await sleep(3000);
             
@@ -2038,8 +2047,13 @@
             // Check person (5 sec met loading dots)
             document.getElementById('envelope-summary').innerHTML = `
                 <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">👤 PERSOON</div>
-                <div style="font-size: 1.4em; color: white; margin: 20px 0;">
-                    <strong>${personName}</strong><span class="loading-dots"></span>
+                <div style="font-size: 1.8em; color: white; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+                    <strong>${personName}</strong>
+                    <span class="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
                 </div>
             `;
             await sleep(5000);
@@ -2047,8 +2061,13 @@
             // Check weapon (5 sec met loading dots)
             document.getElementById('envelope-summary').innerHTML = `
                 <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">🔪 WAPEN</div>
-                <div style="font-size: 1.4em; color: white; margin: 20px 0;">
-                    <strong>${weaponName}</strong><span class="loading-dots"></span>
+                <div style="font-size: 1.8em; color: white; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+                    <strong>${weaponName}</strong>
+                    <span class="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
                 </div>
             `;
             await sleep(5000);
@@ -2056,8 +2075,13 @@
             // Check location (5 sec met loading dots)
             document.getElementById('envelope-summary').innerHTML = `
                 <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">🏠 LOCATIE</div>
-                <div style="font-size: 1.4em; color: white; margin: 20px 0;">
-                    <strong>${locationName}</strong><span class="loading-dots"></span>
+                <div style="font-size: 1.8em; color: white; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+                    <strong>${locationName}</strong>
+                    <span class="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
                 </div>
             `;
             await sleep(5000);
@@ -2082,10 +2106,10 @@
             const resultDiv = document.getElementById('envelope-result');
             resultDiv.classList.remove('hidden');
             
-            // Set initial state - start heel klein (0.3 ipv 0.5)
+            // Set initial state - invisible and small (START klein)
             resultDiv.style.opacity = '0';
-            resultDiv.style.transform = 'scale(0.3)';
-            resultDiv.style.transition = 'all 0.5s ease-out';
+            resultDiv.style.transform = 'scale(0.5)';
+            resultDiv.style.transition = 'all 0.6s ease-out';
             
             if (isCorrect) {
                 resultDiv.innerHTML = '<div style="color: #4caf50; font-size: 2.5em; font-weight: bold;">✅ JUIST!</div>';
@@ -2096,7 +2120,7 @@
             // Force reflow
             void resultDiv.offsetHeight;
             
-            // Smooth scale to normal size
+            // Smooth scale to normal size (geen overshoot)
             setTimeout(() => {
                 resultDiv.style.opacity = '1';
                 resultDiv.style.transform = 'scale(1)';
