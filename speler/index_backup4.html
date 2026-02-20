@@ -512,7 +512,7 @@
         .confetti:nth-child(4n) { background: #2ecc71; animation-delay: 0.6s; }
         .confetti:nth-child(5n) { background: #9b59b6; animation-delay: 0.8s; }
         
-        /* Loading dots animation - 3 cycles */
+        /* Loading dots animation - sequential appearance */
         .loading-dots {
             display: inline-block;
             width: 30px;
@@ -531,18 +531,10 @@
         }
         
         @keyframes dotsSequential {
-            0%, 5% { content: ''; }
-            6%, 11% { content: '.'; }
-            12%, 17% { content: '..'; }
-            18%, 33% { content: '...'; }
-            34%, 39% { content: ''; }
-            40%, 45% { content: '.'; }
-            46%, 51% { content: '..'; }
-            52%, 66% { content: '...'; }
-            67%, 72% { content: ''; }
-            73%, 78% { content: '.'; }
-            79%, 84% { content: '..'; }
-            85%, 100% { content: '...'; }
+            0% { content: ''; }
+            10% { content: '.'; }
+            20% { content: '..'; }
+            30%, 100% { content: '...'; }
         }
     </style>
 </head>
@@ -2090,15 +2082,25 @@
             const resultDiv = document.getElementById('envelope-result');
             resultDiv.classList.remove('hidden');
             
-            // Geen animatie - direct tonen
-            resultDiv.style.opacity = '1';
-            resultDiv.style.transform = 'scale(1)';
+            // Set initial state - start heel klein (0.3 ipv 0.5)
+            resultDiv.style.opacity = '0';
+            resultDiv.style.transform = 'scale(0.3)';
+            resultDiv.style.transition = 'all 0.5s ease-out';
             
             if (isCorrect) {
                 resultDiv.innerHTML = '<div style="color: #4caf50; font-size: 2.5em; font-weight: bold;">✅ JUIST!</div>';
             } else {
                 resultDiv.innerHTML = '<div style="color: #ff6b6b; font-size: 2.5em; font-weight: bold;">❌ ONJUIST!</div>';
             }
+            
+            // Force reflow
+            void resultDiv.offsetHeight;
+            
+            // Smooth scale to normal size
+            setTimeout(() => {
+                resultDiv.style.opacity = '1';
+                resultDiv.style.transform = 'scale(1)';
+            }, 50);
             
             await sleep(3000);
             
