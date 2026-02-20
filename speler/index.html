@@ -1424,12 +1424,16 @@
             // 9c. Reset my cards display
             document.getElementById('my-cards').innerHTML = '';
             
-            // 9d. Reset button states
-            document.getElementById('check-suggestion-btn').disabled = true;
-            document.getElementById('scan-accusation-btn').disabled = false;
-            
             // 10. Go to welcome screen
             showScreen('screen-welcome');
+            
+            // 11. Reset button states (NA showScreen)
+            document.getElementById('check-suggestion-btn').disabled = true;
+            const accusationBtn = document.getElementById('scan-accusation-btn');
+            if (accusationBtn) {
+                accusationBtn.disabled = false;
+                accusationBtn.style.opacity = '1';
+            }
             
             console.log('✅ Complete reset successful');
         }

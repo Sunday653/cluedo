@@ -1342,6 +1342,28 @@
             document.getElementById('suggestion-weapon').innerHTML = '<span class="empty">Scan kaart</span>';
             document.getElementById('suggestion-location').innerHTML = '<span class="empty">Scan kaart</span>';
             
+            // Reset currentSuggestion in gameState
+            gameState.currentSuggestion = {
+                person: null,
+                weapon: null,
+                location: null
+            };
+            
+            // 5b. Reset envelope modal
+            document.getElementById('envelope-animation').classList.remove('hidden');
+            document.getElementById('envelope-solution').classList.add('hidden');
+            document.getElementById('envelope-result').classList.add('hidden');
+            document.getElementById('envelope-title').textContent = 'De envelop wordt geopend...';
+            document.getElementById('envelope-status').textContent = 'Even geduld...';
+            document.getElementById('envelope-summary').innerHTML = '';
+            
+            // 5c. Reset accusation modal
+            const accusationSelects = ['accusation-person', 'accusation-weapon', 'accusation-location'];
+            accusationSelects.forEach(id => {
+                const select = document.getElementById(id);
+                if (select) select.selectedIndex = 0;
+            });
+            
             // 6. Remove team color styling
             const oldStyle = document.getElementById('team-color-style');
             if (oldStyle) oldStyle.remove();
@@ -1391,6 +1413,20 @@
             document.getElementById('scan-team-btn').style.opacity = '1';
             document.getElementById('scan-config-btn').disabled = true;
             document.getElementById('scan-config-btn').style.opacity = '0.5';
+            
+            // 9b. Reset history display
+            document.getElementById('history-list').innerHTML = `
+                <div class="info-box">
+                    <p style="text-align: center; color: #999;">Nog geen geschiedenis</p>
+                </div>
+            `;
+            
+            // 9c. Reset my cards display
+            document.getElementById('my-cards').innerHTML = '';
+            
+            // 9d. Reset button states
+            document.getElementById('check-suggestion-btn').disabled = true;
+            document.getElementById('scan-accusation-btn').disabled = false;
             
             // 10. Go to welcome screen
             showScreen('screen-welcome');
