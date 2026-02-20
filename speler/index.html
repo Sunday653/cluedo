@@ -843,12 +843,10 @@
                 </div>
                 
                 <div id="envelope-solution" class="hidden" style="margin: 20px 0;">
-                    <div class="info-box">
-                        <div id="envelope-summary" style="margin-top: 10px; font-size: 1.1em;"></div>
-                    </div>
+                    <div id="envelope-summary" style="margin-top: 10px; font-size: 1.1em;"></div>
                 </div>
                 
-                <div id="envelope-result" class="hidden" style="margin-top: 30px;">
+                <div id="envelope-result" class="hidden" style="margin-top: 30px; text-align: center;">
                     <!-- Result appears here -->
                 </div>
             </div>
@@ -2045,27 +2043,36 @@
             
             // Check person (5 sec met loading dots)
             document.getElementById('envelope-summary').innerHTML = `
-                <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">👤 PERSOON</div>
-                <div style="font-size: 1.4em; color: white; margin: 20px 0;">
-                    <strong>${personName}</strong><span class="loading-dots"></span>
+                <div class="info-box" style="background: #0f3460; padding: 20px; border-radius: 8px;">
+                    <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">👤 PERSOON</div>
+                    <div style="font-size: 1.4em; color: white; margin: 10px 0; display: flex; align-items: center; justify-content: center;">
+                        <strong>${personName}</strong>
+                        <span class="loading-dots"></span>
+                    </div>
                 </div>
             `;
             await sleep(5000);
             
             // Check weapon (5 sec met loading dots)
             document.getElementById('envelope-summary').innerHTML = `
-                <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">🔪 WAPEN</div>
-                <div style="font-size: 1.4em; color: white; margin: 20px 0;">
-                    <strong>${weaponName}</strong><span class="loading-dots"></span>
+                <div class="info-box" style="background: #0f3460; padding: 20px; border-radius: 8px;">
+                    <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">🔪 WAPEN</div>
+                    <div style="font-size: 1.4em; color: white; margin: 10px 0; display: flex; align-items: center; justify-content: center;">
+                        <strong>${weaponName}</strong>
+                        <span class="loading-dots"></span>
+                    </div>
                 </div>
             `;
             await sleep(5000);
             
             // Check location (5 sec met loading dots)
             document.getElementById('envelope-summary').innerHTML = `
-                <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">🏠 LOCATIE</div>
-                <div style="font-size: 1.4em; color: white; margin: 20px 0;">
-                    <strong>${locationName}</strong><span class="loading-dots"></span>
+                <div class="info-box" style="background: #0f3460; padding: 20px; border-radius: 8px;">
+                    <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">🏠 LOCATIE</div>
+                    <div style="font-size: 1.4em; color: white; margin: 10px 0; display: flex; align-items: center; justify-content: center;">
+                        <strong>${locationName}</strong>
+                        <span class="loading-dots"></span>
+                    </div>
                 </div>
             `;
             await sleep(5000);
