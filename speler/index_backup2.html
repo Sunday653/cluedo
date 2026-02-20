@@ -512,37 +512,18 @@
         .confetti:nth-child(4n) { background: #2ecc71; animation-delay: 0.6s; }
         .confetti:nth-child(5n) { background: #9b59b6; animation-delay: 0.8s; }
         
-        /* Loading dots animation - color changing */
-        .loading-dots {
-            display: inline-flex;
-            gap: 8px;
-            margin-left: 10px;
+        /* Loading dots animation */
+        .loading-dots::after {
+            content: '...';
+            display: inline-block;
+            animation: dots 1.5s steps(4, end) infinite;
         }
         
-        .loading-dots span {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #0f3460;
-            animation: dotPulse 5s ease-in-out infinite;
-        }
-        
-        .loading-dots span:nth-child(1) {
-            animation-delay: 0s;
-        }
-        
-        .loading-dots span:nth-child(2) {
-            animation-delay: 1.66s;
-        }
-        
-        .loading-dots span:nth-child(3) {
-            animation-delay: 3.33s;
-        }
-        
-        @keyframes dotPulse {
-            0%, 33% { background: #0f3460; }
-            34%, 66% { background: white; }
-            67%, 100% { background: #0f3460; }
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
         }
     </style>
 </head>
@@ -836,6 +817,7 @@
         <div id="envelope-modal" class="modal">
             <div class="modal-content" style="text-align: center;">
                 <h3 id="envelope-title">De envelop wordt geopend...</h3>
+                <p style="color: #999; margin-top: 10px; font-size: 0.9em;">De oplossing uit de envelop wordt vergeleken met jullie antwoord.</p>
                 
                 <div id="envelope-animation" style="margin: 30px 0;">
                     <div style="font-size: 4em; margin-bottom: 20px;">✉️</div>
@@ -2035,70 +2017,52 @@
             document.getElementById('envelope-title').textContent = 'De envelop wordt geopend...';
             await sleep(3000);
             
-            // Phase 2: Controleren
+            // Phase 2: Skip "Jouw beschuldiging" - ga direct naar controleren
             document.getElementById('envelope-title').textContent = 'Controleren...';
             document.getElementById('envelope-animation').classList.add('hidden');
             document.getElementById('envelope-solution').classList.remove('hidden');
             
-            // Direct content tonen (geen lege balk meer)
+            await sleep(500);
             
-            // Phase 3: Check INDIVIDUALLY met animatie (3x5 sec = 15 sec total)
+            // Phase 3: Check INDIVIDUALLY met animatie (3x3 sec = 9 sec total)
             
-            // Check person (5 sec met loading dots)
+            // Check person (3 sec met loading dots)
             document.getElementById('envelope-summary').innerHTML = `
                 <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">👤 PERSOON</div>
-                <div style="font-size: 1.8em; color: white; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
-                    <strong>${personName}</strong>
-                    <span class="loading-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </span>
+                <div style="font-size: 1.8em; color: white; margin: 20px 0;">
+                    <strong>${personName}</strong><span class="loading-dots"></span>
                 </div>
             `;
-            await sleep(5000);
+            await sleep(3000);
             
-            // Check weapon (5 sec met loading dots)
+            // Check weapon (3 sec met loading dots)
             document.getElementById('envelope-summary').innerHTML = `
                 <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">🔪 WAPEN</div>
-                <div style="font-size: 1.8em; color: white; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
-                    <strong>${weaponName}</strong>
-                    <span class="loading-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </span>
+                <div style="font-size: 1.8em; color: white; margin: 20px 0;">
+                    <strong>${weaponName}</strong><span class="loading-dots"></span>
                 </div>
             `;
-            await sleep(5000);
+            await sleep(3000);
             
-            // Check location (5 sec met loading dots)
+            // Check location (3 sec met loading dots)
             document.getElementById('envelope-summary').innerHTML = `
                 <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">🏠 LOCATIE</div>
-                <div style="font-size: 1.8em; color: white; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
-                    <strong>${locationName}</strong>
-                    <span class="loading-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </span>
+                <div style="font-size: 1.8em; color: white; margin: 20px 0;">
+                    <strong>${locationName}</strong><span class="loading-dots"></span>
                 </div>
             `;
-            await sleep(5000);
+            await sleep(3000);
             
-            // Phase 4: Dramatic reveal met trommel
+            // Phase 4: Dramatic reveal met heartbeat effect
             const solution = gameState.config.solution;
             const isCorrect = solution.includes(personKcode) && 
                             solution.includes(weaponKcode) && 
                             solution.includes(locationKcode);
             
             document.getElementById('envelope-title').textContent = '⚖️ Het oordeel...';
-            document.getElementById('envelope-summary').innerHTML = `
-                <div style="color: #999; margin-bottom: 15px;">Jullie beschuldiging is...</div>
-                <div style="font-size: 3em; margin: 30px 0;">🥁</div>
-            `;
+            document.getElementById('envelope-summary').innerHTML = '<div style="font-size: 2em; margin: 40px 0;">⏳</div>';
             
-            await sleep(3000);
+            await sleep(2000);
             
             // Clear summary
             document.getElementById('envelope-summary').innerHTML = '';
@@ -2106,10 +2070,10 @@
             const resultDiv = document.getElementById('envelope-result');
             resultDiv.classList.remove('hidden');
             
-            // Set initial state - invisible and small (START klein)
+            // Set initial state - invisible and small
             resultDiv.style.opacity = '0';
-            resultDiv.style.transform = 'scale(0.5)';
-            resultDiv.style.transition = 'all 0.6s ease-out';
+            resultDiv.style.transform = 'scale(0)';
+            resultDiv.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
             
             if (isCorrect) {
                 resultDiv.innerHTML = '<div style="color: #4caf50; font-size: 2.5em; font-weight: bold;">✅ JUIST!</div>';
@@ -2120,11 +2084,11 @@
             // Force reflow
             void resultDiv.offsetHeight;
             
-            // Smooth scale to normal size (geen overshoot)
+            // Bounce in effect
             setTimeout(() => {
                 resultDiv.style.opacity = '1';
                 resultDiv.style.transform = 'scale(1)';
-            }, 50);
+            }, 100);
             
             await sleep(3000);
             
