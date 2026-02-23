@@ -1329,7 +1329,6 @@
             
             const h1 = document.querySelector('h1');
             h1.style.setProperty('--team-color', color);
-            document.documentElement.style.setProperty('--team-color', color);
             h1.classList.add('team-colored');
             
             const style = document.createElement('style');
@@ -1467,7 +1466,6 @@
             const h1 = document.querySelector('h1');
             h1.classList.remove('team-colored');
             h1.style.removeProperty('--team-color');
-            document.documentElement.style.removeProperty('--team-color');
             
             // 7. Clear localStorage
             for (let i = 1; i <= 6; i++) {
@@ -1784,7 +1782,7 @@
                 
                 if (entry.type === 'suggestion') {
                     let html = `
-                        <div style="font-weight: 600; color: var(--team-color, #667eea); margin-bottom: 10px;">${time} - SUGGESTIE</div>
+                        <div style="font-weight: 600; color: #667eea; margin-bottom: 10px;">${time} - SUGGESTIE</div>
                         <div style="font-size: 0.9em; margin-bottom: 8px;">
                             👤 ${entry.suggestion.person.name}<br>
                             🔪 ${entry.suggestion.weapon.name}<br>
@@ -1805,7 +1803,7 @@
                     div.innerHTML = html;
                 } else if (entry.type === 'accusation') {
                     let html = `
-                        <div style="font-weight: 600; color: var(--team-color, #667eea); margin-bottom: 10px;">${time} - BESCHULDIGING</div>
+                        <div style="font-weight: 600; color: #667eea; margin-bottom: 10px;">${time} - BESCHULDIGING</div>
                         <div style="font-size: 0.9em; margin-bottom: 8px;">
                             👤 ${entry.accusation.person.name}<br>
                             🔪 ${entry.accusation.weapon.name}<br>
