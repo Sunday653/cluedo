@@ -544,34 +544,34 @@
             79%, 84% { content: '..'; }
             85%, 100% { content: '...'; }
         }
-        /* Compact QR scanner - verwijder onnodige ruimte, behoud camera-knop */
-        /* Verberg alleen de "Scan an image file" optie (tweede sectie) */
-        [id$="__dashboard_section_fileselection"] {
+        /* Compact QR scanner - verwijder onnodige ruimte rondom camera */
+        #qr-reader > div:first-child,
+        #qr-reader-config > div:first-child,
+        #qr-reader-card > div:first-child,
+        #qr-reader-scout > div:first-child,
+        #qr-reader-team-check > div:first-child,
+        #qr-reader-accusation > div:first-child {
             display: none !important;
         }
-        /* Verberg de "Or" tekst tussen de twee opties */
-        [id$="__dashboard_section_csr"] + span {
+        /* Verberg status tekst, footer link en extra padding */
+        [id$="__status_span"],
+        [id$="__dashboard_section_csr"],
+        [id$="__dashboard_section_swaplink"],
+        [id$="__filescan_input"],
+        [id$="__header_message"] {
             display: none !important;
         }
-        /* Verberg status/info tekst onder camera */
-        [id$="__status_span"] {
-            display: none !important;
-        }
-        /* Verberg de "Scan type change" link (wissel naar file) */
-        [id$="__dashboard_section_swaplink"] {
-            display: none !important;
-        }
-        /* Geen border/padding op de container zelf */
         #qr-reader, #qr-reader-config, #qr-reader-card,
         #qr-reader-scout, #qr-reader-team-check, #qr-reader-accusation {
             border: none !important;
             padding: 0 !important;
         }
-        /* Camera video compact */
+        /* Camera video container compact */
         [id$="__scan_region"] {
             padding: 0 !important;
             min-height: unset !important;
         }
+        [id$="__scan_region"] img,
         [id$="__scan_region"] video {
             max-width: 100% !important;
         }
