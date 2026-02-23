@@ -765,20 +765,16 @@
         <div id="scout-scan-modal" class="modal">
             <div class="modal-content">
                 <h3>📡 Decoderen</h3>
-                <div id="scout-progress-container" style="background:#0f3460; border-radius:8px; padding:15px; margin-bottom:10px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:#999; font-size:0.9em;">Decoderen...</span>
-                        <span id="scout-progress-pct" style="color:white; font-weight:bold;">0%</span>
-                    </div>
-                    <div style="background:#1a2942; border-radius:4px; height:20px; overflow:hidden;">
-                        <div id="scout-progress-bar" style="height:100%; width:0%; background:linear-gradient(90deg,#667eea,#764ba2); transition:width 0.1s linear; border-radius:4px;"></div>
+                <div id="scout-progress-container" style="background:#0f3460; border-radius:8px; padding:10px; margin-bottom:10px; position:relative;">
+                    <div style="background:#1a2942; border-radius:4px; height:24px; overflow:hidden; position:relative;">
+                        <div id="scout-progress-bar" style="height:100%; width:0%; background:var(--team-color, linear-gradient(90deg,#667eea,#764ba2)); transition:width 0.1s linear; border-radius:4px;"></div>
+                        <span id="scout-progress-pct" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:white; font-weight:bold; font-size:0.85em; text-shadow:0 1px 2px rgba(0,0,0,0.5);">0%</span>
+                        <div id="scout-alert" class="hidden" style="position:absolute; inset:0; background:rgba(198,40,40,0.92); display:flex; align-items:center; justify-content:center; gap:8px; border-radius:4px; font-size:0.82em; font-weight:bold; color:white; padding:0 8px;">
+                            <span>⚠️</span><span id="scout-recovery-countdown"></span>
+                        </div>
                     </div>
                 </div>
                 <div id="qr-reader-scout"></div>
-                <div id="scout-alert" class="hidden" style="background:#c62828; color:white; padding:12px; border-radius:8px; margin-top:10px; text-align:center;">
-                    <strong>⚠️ Blijf de QR-code in beeld houden!</strong><br>
-                    <span id="scout-recovery-countdown"></span>
-                </div>
                 <button class="btn btn-secondary" onclick="cancelScoutScan()" style="margin-top:10px;">Annuleren</button>
             </div>
         </div>
@@ -1557,6 +1553,11 @@
             document.getElementById('tabs-row-2').classList.add('hidden');
             document.getElementById('tabs-scout').classList.remove('hidden');
             displayTeamInfo();
+            // Teamkleur ook op de voortgangsbalk
+            const colorMap = { 'Rood':'#dc3545','Blauw':'#007bff','Groen':'#28a745','Geel':'#ffc107','Paars':'#6f42c1','Oranje':'#fd7e14' };
+            const color = colorMap[gameState.teamColor] || '#667eea';
+            const bar = document.getElementById('scout-progress-bar');
+            if (bar) bar.style.background = color;
             renderScoutLog();
             switchGameTab('scout-decoder-tab');
         }
@@ -1589,7 +1590,8 @@
                 if (cardData.type !== 'card' || !cardData.id || !/^K\d+$/.test(cardData.id)) {
                     if (!scoutCurrentCard || scoutCurrentCard.id !== '__invalid__') {
                         scoutCurrentCard = { id: '__invalid__' };
-                        document.getElementById('scout-alert').querySelector('strong').textContent = 'Deze kaart is onleesbaar voor de decoder.';
+                        const countdown = document.getElementById('scout-recovery-countdown');
+                        if (countdown) countdown.textContent = 'Kaart onleesbaar voor decoder';
                         document.getElementById('scout-alert').classList.remove('hidden');
                         setTimeout(() => document.getElementById('scout-alert').classList.add('hidden'), 3000);
                     }
@@ -1627,7 +1629,6 @@
         function startScoutLostTimer() {
             scoutLostCount = 5;
             document.getElementById('scout-alert').classList.remove('hidden');
-            document.getElementById('scout-alert').querySelector('strong').textContent = '⚠️ Blijf de QR-code in beeld houden!';
             updateScoutRecovery();
             scoutLostTimer = setInterval(() => {
                 scoutLostCount--;
@@ -1644,7 +1645,7 @@
 
         function updateScoutRecovery() {
             const el = document.getElementById('scout-recovery-countdown');
-            if (el) el.textContent = `Nog ${scoutLostCount} seconde${scoutLostCount !== 1 ? 'n' : ''} om opnieuw te richten...`;
+            if (el) el.textContent = `Richt opnieuw! Nog ${scoutLostCount}s...`;
         }
 
         function clearScoutLostTimer() {
