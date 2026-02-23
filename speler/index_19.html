@@ -785,11 +785,10 @@
                 <h3>Gedecodeerde Kaart</h3>
                 <div class="card-display">
                     <div class="icon" id="scout-card-icon"></div>
-                    <div id="scout-card-kcode" style="font-size:0.85em; color:#999; margin-bottom:4px;"></div>
                     <div class="name" id="scout-card-name"></div>
                     <div class="type" id="scout-card-type"></div>
                 </div>
-                <div class="modal-buttons" style="display:flex; justify-content:flex-end;">
+                <div class="modal-buttons">
                     <button class="btn btn-small" onclick="addToScoutLog()">✅ Toevoegen aan logboek</button>
                 </div>
             </div>
@@ -1676,7 +1675,6 @@
             const icon = cardInfo.type === 'p' ? '👤' : cardInfo.type === 'w' ? '🔪' : '🏠';
             const typeLabel = cardInfo.type === 'p' ? 'Persoon' : cardInfo.type === 'w' ? 'Wapen' : 'Locatie';
             document.getElementById('scout-card-icon').textContent = icon;
-            document.getElementById('scout-card-kcode').textContent = kcode.replace('K', 'Kaart ');
             document.getElementById('scout-card-name').textContent = cardInfo.name;
             document.getElementById('scout-card-type').textContent = typeLabel;
             document.getElementById('scout-scan-modal').classList.remove('active');
@@ -1727,8 +1725,8 @@
                 return `<div class="checking-item">
                     <span style="font-size:1.5em;">${icon}</span>
                     <div style="flex:1; margin-left:12px;">
-                        <div style="font-size:0.8em; color:#999;">${entry.kcode.replace('K', 'Kaart ')} &bull; ${typeLabel} &bull; ${time}</div>
                         <div style="font-weight:600; color:white;">${entry.name}</div>
+                        <div style="font-size:0.85em; color:#999;">${typeLabel} &bull; ${time}</div>
                     </div>
                 </div>`;
             }).join('');
