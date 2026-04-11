@@ -1866,19 +1866,6 @@
                     }
                     
                     div.innerHTML = html;
-                } else if (entry.type === 'scan_penalty') {
-                    const mins = entry.penaltyMinutes === 1 ? '1 minuut' : `${entry.penaltyMinutes} minuten`;
-                    let html = `
-                        <div style="font-weight: 600; color: #ffc107; margin-bottom: 10px;">${time} - ⏱️ TIJDSTRAF GEKOZEN</div>
-                        <div style="font-size: 0.9em; margin-bottom: 8px;">
-                            👤 ${entry.suggestion.person.name}<br>
-                            🔪 ${entry.suggestion.weapon.name}<br>
-                            🏠 ${entry.suggestion.location.name}
-                        </div>
-                        <div style="color: #ff6b6b;">→ Team ${entry.skippedTeam} QR niet gescand</div>
-                        <div style="color: #999;">⏱️ Straf: ${mins}</div>
-                    `;
-                    div.innerHTML = html;
                 }
                 
                 container.appendChild(div);
@@ -1908,17 +1895,8 @@
         function confirmScanWithPenalty() {
             document.getElementById('scan-penalty-warning-modal').classList.remove('active');
             
-            // Voeg logboek entry toe
-            const penaltyMinutes = gameState.config.settings.penaltyMinutes;
-            gameState.history.push({
-                timestamp: Date.now(),
-                type: 'scan_penalty',
-                suggestion: {...gameState.currentSuggestion},
-                skippedTeam: gameState.scanPenaltyTeam,
-                penaltyMinutes: penaltyMinutes
-            });
-            
             // Start penalty
+            const penaltyMinutes = gameState.config.settings.penaltyMinutes;
             const penaltyEndTime = Date.now() + (penaltyMinutes * 60 * 1000);
             gameState.penalty = {
                 active: true,
