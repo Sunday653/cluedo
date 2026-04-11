@@ -690,7 +690,8 @@
                         </div>
                     </div>
                     
-                    <button class="btn" id="scan-card-btn" onclick="scanCard()">🔷 Scan Kaart</button>
+                    <button class="btn" id="scan-card-btn" onclick="scanCardOrWarn()">🔷 Scan Kaart</button>
+                    <button class="btn hidden" id="scan-team-qr-btn" onclick="resumeTeamScan()">📷 Scan QR Team <span id="scan-team-qr-nr"></span></button>
                     <button class="btn" id="check-suggestion-btn" onclick="checkSuggestion()" disabled>🔍 Controleer</button>
                 </div>
                 
@@ -942,10 +943,28 @@
             </div>
         </div>
         
+        <!-- Scan Penalty Warning Modal -->
+        <div id="scan-penalty-warning-modal" class="modal">
+            <div class="modal-content">
+                <h3>⚠️ Weet je het zeker?</h3>
+                <div class="info-box" style="background: #3d2817; border-left-color: #ff6b6b; margin: 20px 0;">
+                    <p style="color: #ff6b6b;">
+                        <strong>Let op!</strong><br>
+                        Team <span id="scan-warn-team-nr"></span> heeft nog een kaart voor je.<br><br>
+                        Als je toch een andere kaart scant, krijg je een tijdstraf van <span id="scan-warn-minutes"></span> minuten!
+                    </p>
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary btn-small" onclick="closeScanPenaltyWarning()">❌ Annuleren</button>
+                    <button class="btn btn-small" style="background: #dc3545 !important;" onclick="confirmScanWithPenalty()">⚠️ Doorgaan (tijdstraf!)</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Penalty Overlay -->
         <div id="penalty-overlay" class="penalty-overlay">
             <div class="penalty-content">
-                <h2>❌ ONJUIST!</h2>
+                <h2 id="penalty-title">❌ ONJUIST!</h2>
                 <div class="penalty-timer" id="penalty-timer">00:00</div>
                 <div class="penalty-message">
                     Je mag over <span id="penalty-seconds">0</span> sec<br>
@@ -957,11 +976,21 @@
         <!-- Penalty End Modal -->
         <div id="penalty-end-modal" class="modal">
             <div class="modal-content">
-                <h3>❌ Je beschuldiging was onjuist!</h3>
-                <div class="info-box" style="margin: 20px 0;">
-                    <p style="text-align: center;">
-                        Ga je huiswerk doen en kom pas terug als je zeker bent dat je alle feiten gevonden hebt!
-                    </p>
+                <div id="penalty-end-accusation">
+                    <h3>❌ Je beschuldiging was onjuist!</h3>
+                    <div class="info-box" style="margin: 20px 0;">
+                        <p style="text-align: center;">
+                            Ga je huiswerk doen en kom pas terug als je zeker bent dat je alle feiten gevonden hebt!
+                        </p>
+                    </div>
+                </div>
+                <div id="penalty-end-scan" class="hidden">
+                    <h3>⏰ Tijdstraf uitgezeten!</h3>
+                    <div class="info-box" style="margin: 20px 0;">
+                        <p style="text-align: center;">
+                            Je kunt nu weer vrijelijk kaarten scannen.
+                        </p>
+                    </div>
                 </div>
                 <button class="btn" onclick="closePenaltyEnd()">Oké, verder spelen</button>
             </div>
@@ -1015,6 +1044,7 @@
                 endTime: null,
                 reason: null
             },
+            scanPenaltyTeam: null, // Team nummer waarvoor scan-penalty actief is
             gameWon: {
                 won: false,
                 timestamp: null,
@@ -1087,6 +1117,14 @@
                                     displayTeamInfo();
                                     gameState.penalty.active = false;
                                     saveGameState();
+                                    // Toon juiste inhoud op basis van reason
+                                    if (gameState.penalty.reason === 'scan_during_check') {
+                                        document.getElementById('penalty-end-accusation').classList.add('hidden');
+                                        document.getElementById('penalty-end-scan').classList.remove('hidden');
+                                    } else {
+                                        document.getElementById('penalty-end-accusation').classList.remove('hidden');
+                                        document.getElementById('penalty-end-scan').classList.add('hidden');
+                                    }
                                     document.getElementById('penalty-end-modal').classList.add('active');
                                     return;
                                 }
@@ -1098,6 +1136,12 @@
                             } else {
                                 displayTeamInfo();
                                 displayMyCards();
+                                // Herstel scan-penalty UI staat indien nodig
+                                if (gameState.scanPenaltyTeam) {
+                                    document.getElementById('scan-team-qr-nr').textContent = gameState.scanPenaltyTeam;
+                                    document.getElementById('scan-team-qr-btn').classList.remove('hidden');
+                                    document.getElementById('check-suggestion-btn').classList.add('hidden');
+                                }
                                 updateButtonStates();
                             }
                             return;
@@ -1830,6 +1874,50 @@
         
         let scannedCardData = null;
         
+        // Scan card - check eerst of penalty-waarschuwing nodig is
+        function scanCardOrWarn() {
+            if (gameState.scanPenaltyTeam) {
+                // Toon waarschuwing
+                document.getElementById('scan-warn-team-nr').textContent = gameState.scanPenaltyTeam;
+                document.getElementById('scan-warn-minutes').textContent = gameState.config.settings.penaltyMinutes;
+                document.getElementById('scan-penalty-warning-modal').classList.add('active');
+            } else {
+                scanCard();
+            }
+        }
+
+        // Sluit waarschuwingsmodal zonder actie
+        function closeScanPenaltyWarning() {
+            document.getElementById('scan-penalty-warning-modal').classList.remove('active');
+        }
+
+        // Bevestig scan met penalty
+        function confirmScanWithPenalty() {
+            document.getElementById('scan-penalty-warning-modal').classList.remove('active');
+            
+            // Start penalty
+            const penaltyMinutes = gameState.config.settings.penaltyMinutes;
+            const penaltyEndTime = Date.now() + (penaltyMinutes * 60 * 1000);
+            gameState.penalty = {
+                active: true,
+                endTime: penaltyEndTime,
+                reason: 'scan_during_check'
+            };
+            saveGameState();
+            startPenaltyTimer();
+        }
+
+        // Hervat team scan (na annuleren)
+        function resumeTeamScan() {
+            // Herstel team-check modal met hetzelfde team
+            const matchTeam = gameState.scanPenaltyTeam;
+            document.getElementById('team-check-message').textContent = `Team ${matchTeam} heeft een kaart!`;
+            gameState.currentCheckTeam = matchTeam;
+            document.getElementById('qr-reader-team-check').classList.add('hidden');
+            document.getElementById('start-team-scan-btn').classList.remove('hidden');
+            document.getElementById('team-check-modal').classList.add('active');
+        }
+
         // Scan card
         function scanCard() {
             document.getElementById('card-scan-modal').classList.add('active');
@@ -2172,6 +2260,11 @@
             
             document.getElementById('suggestion-result-modal').classList.add('active');
             
+            // Reset scan-penalty staat na succesvolle afhandeling
+            gameState.scanPenaltyTeam = null;
+            document.getElementById('scan-team-qr-btn').classList.add('hidden');
+            document.getElementById('check-suggestion-btn').classList.remove('hidden');
+            
             saveGameState();
         }
         
@@ -2200,6 +2293,16 @@
                 gameState.scanner = null;
             }
             document.getElementById('team-check-modal').classList.remove('active');
+            
+            // Toon "Scan QR Team X" knop en verberg "Controleer"
+            const matchTeam = gameState.currentCheckTeam;
+            if (matchTeam) {
+                document.getElementById('scan-team-qr-nr').textContent = matchTeam;
+                document.getElementById('scan-team-qr-btn').classList.remove('hidden');
+                document.getElementById('check-suggestion-btn').classList.add('hidden');
+                gameState.scanPenaltyTeam = matchTeam;
+                saveGameState();
+            }
         }
         
         // ========== BESCHULDIGING FUNCTIES ==========
@@ -2606,6 +2709,14 @@
         function startPenaltyTimer() {
             document.getElementById('penalty-overlay').classList.add('active');
             
+            // Pas titel aan op reden
+            const title = document.getElementById('penalty-title');
+            if (gameState.penalty.reason === 'scan_during_check') {
+                title.textContent = '⚠️ TIJDSTRAF!';
+            } else {
+                title.textContent = '❌ ONJUIST!';
+            }
+            
             if (penaltyInterval) {
                 clearInterval(penaltyInterval);
             }
@@ -2627,6 +2738,16 @@
                     saveGameState();
                     
                     document.getElementById('penalty-overlay').classList.remove('active');
+                    
+                    // Toon juiste inhoud in penalty-end-modal
+                    if (gameState.penalty.reason === 'scan_during_check') {
+                        document.getElementById('penalty-end-accusation').classList.add('hidden');
+                        document.getElementById('penalty-end-scan').classList.remove('hidden');
+                    } else {
+                        document.getElementById('penalty-end-accusation').classList.remove('hidden');
+                        document.getElementById('penalty-end-scan').classList.add('hidden');
+                    }
+                    
                     document.getElementById('penalty-end-modal').classList.add('active');
                 }
             };
@@ -2638,7 +2759,18 @@
         // Close penalty end
         function closePenaltyEnd() {
             document.getElementById('penalty-end-modal').classList.remove('active');
-            switchGameTab('accusation-tab');
+            
+            if (gameState.penalty.reason === 'scan_during_check') {
+                // Scan penalty: terug naar suggestie tab, scanPenaltyTeam wissen
+                gameState.scanPenaltyTeam = null;
+                document.getElementById('scan-team-qr-btn').classList.add('hidden');
+                document.getElementById('check-suggestion-btn').classList.remove('hidden');
+                saveGameState();
+                switchGameTab('suggestion-tab');
+            } else {
+                // Beschuldigings penalty: terug naar beschuldig tab
+                switchGameTab('accusation-tab');
+            }
         }
         
         // Format time

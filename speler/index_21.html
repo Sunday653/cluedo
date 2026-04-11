@@ -785,10 +785,11 @@
                 <h3>Gedecodeerde Kaart</h3>
                 <div class="card-display">
                     <div class="icon" id="scout-card-icon"></div>
+                    <div id="scout-card-kcode" style="font-size:0.85em; color:#999; margin-bottom:4px;"></div>
                     <div class="name" id="scout-card-name"></div>
                     <div class="type" id="scout-card-type"></div>
                 </div>
-                <div class="modal-buttons">
+                <div class="modal-buttons" style="display:flex; justify-content:flex-end;">
                     <button class="btn btn-small" onclick="addToScoutLog()">✅ Toevoegen aan logboek</button>
                 </div>
             </div>
@@ -1328,6 +1329,7 @@
             
             const h1 = document.querySelector('h1');
             h1.style.setProperty('--team-color', color);
+            document.documentElement.style.setProperty('--team-color', color);
             h1.classList.add('team-colored');
             
             const style = document.createElement('style');
@@ -1465,6 +1467,7 @@
             const h1 = document.querySelector('h1');
             h1.classList.remove('team-colored');
             h1.style.removeProperty('--team-color');
+            document.documentElement.style.removeProperty('--team-color');
             
             // 7. Clear localStorage
             for (let i = 1; i <= 6; i++) {
@@ -1675,6 +1678,7 @@
             const icon = cardInfo.type === 'p' ? '👤' : cardInfo.type === 'w' ? '🔪' : '🏠';
             const typeLabel = cardInfo.type === 'p' ? 'Persoon' : cardInfo.type === 'w' ? 'Wapen' : 'Locatie';
             document.getElementById('scout-card-icon').textContent = icon;
+            document.getElementById('scout-card-kcode').textContent = kcode.replace('K', 'Kaart ');
             document.getElementById('scout-card-name').textContent = cardInfo.name;
             document.getElementById('scout-card-type').textContent = typeLabel;
             document.getElementById('scout-scan-modal').classList.remove('active');
@@ -1725,8 +1729,8 @@
                 return `<div class="checking-item">
                     <span style="font-size:1.5em;">${icon}</span>
                     <div style="flex:1; margin-left:12px;">
+                        <div style="font-size:0.8em; color:#999;">${entry.kcode.replace('K', 'Kaart ')} &bull; ${typeLabel} &bull; ${time}</div>
                         <div style="font-weight:600; color:white;">${entry.name}</div>
-                        <div style="font-size:0.85em; color:#999;">${typeLabel} &bull; ${time}</div>
                     </div>
                 </div>`;
             }).join('');
@@ -1780,7 +1784,7 @@
                 
                 if (entry.type === 'suggestion') {
                     let html = `
-                        <div style="font-weight: 600; color: #667eea; margin-bottom: 10px;">${time} - SUGGESTIE</div>
+                        <div style="font-weight: 600; color: var(--team-color, #667eea); margin-bottom: 10px;">${time} - SUGGESTIE</div>
                         <div style="font-size: 0.9em; margin-bottom: 8px;">
                             👤 ${entry.suggestion.person.name}<br>
                             🔪 ${entry.suggestion.weapon.name}<br>
@@ -1801,7 +1805,7 @@
                     div.innerHTML = html;
                 } else if (entry.type === 'accusation') {
                     let html = `
-                        <div style="font-weight: 600; color: #667eea; margin-bottom: 10px;">${time} - BESCHULDIGING</div>
+                        <div style="font-weight: 600; color: var(--team-color, #667eea); margin-bottom: 10px;">${time} - BESCHULDIGING</div>
                         <div style="font-size: 0.9em; margin-bottom: 8px;">
                             👤 ${entry.accusation.person.name}<br>
                             🔪 ${entry.accusation.weapon.name}<br>
